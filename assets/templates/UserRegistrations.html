@@ -1,0 +1,232 @@
+{%extends 'base.html'%}
+{%load static%}
+
+{%block title%}Create Account — AI Medical Diagnostics{%endblock%}
+
+{%block content%}
+<style>
+  body {
+    background: #020817 !important;
+    font-family: 'Inter', sans-serif;
+  }
+  .auth-bg {
+    position:fixed; inset:0;
+    background:
+      linear-gradient(rgba(99,102,241,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99,102,241,0.04) 1px, transparent 1px);
+    background-size:55px 55px;
+    animation:gridMove 25s linear infinite; z-index:0;
+  }
+  @keyframes gridMove{
+    0%{background-position:0 0,0 0;}100%{background-position:55px 55px,55px 55px;}
+  }
+  .orb-a{
+    position:fixed;width:450px;height:450px;
+    background:rgba(99,102,241,0.12);border-radius:50%;
+    filter:blur(90px);top:-100px;left:-100px;
+    animation:dA 14s ease-in-out infinite;z-index:0;
+  }
+  .orb-b{
+    position:fixed;width:380px;height:380px;
+    background:rgba(34,197,94,0.10);border-radius:50%;
+    filter:blur(80px);bottom:-60px;right:-60px;
+    animation:dB 10s ease-in-out infinite;z-index:0;
+  }
+  @keyframes dA{0%,100%{transform:translate(0,0);}50%{transform:translate(40px,30px);}}
+  @keyframes dB{0%,100%{transform:translate(0,0);}50%{transform:translate(-30px,-25px);}}
+  
+  .auth-page{
+    position:relative;z-index:10;
+    min-height:100vh;display:flex;
+    align-items:center;justify-content:center;
+    padding:100px 20px 60px;
+  }
+  .glass-auth{
+    width:100%;max-width:580px;
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:24px;padding:48px 44px;
+    backdrop-filter:blur(20px);
+    box-shadow:0 0 0 1px rgba(255,255,255,0.05),0 24px 60px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.12);
+    animation:slideUp 0.7s cubic-bezier(0.4,0,0.2,1) both;
+  }
+  @keyframes slideUp{
+    from{opacity:0;transform:translateY(30px) scale(0.97);}
+    to{opacity:1;transform:translateY(0) scale(1);}
+  }
+  .auth-icon{
+    width:64px;height:64px;border-radius:18px;
+    background:linear-gradient(135deg,#6366f1,#22c55e);
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.6rem;color:#fff;margin:0 auto 20px;
+    box-shadow:0 8px 24px rgba(99,102,241,0.35);
+    animation:iconPop 0.6s 0.2s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+  @keyframes iconPop{from{opacity:0;transform:scale(0.5);}to{opacity:1;transform:scale(1);}}
+  
+  .auth-title{
+    font-family:'Space Grotesk','Inter',sans-serif;
+    font-size:1.7rem;font-weight:800;text-align:center;
+    color:#f8fafc;margin-bottom:6px;letter-spacing:-0.5px;
+  }
+  .auth-sub{
+    text-align:center;color:#64748b;font-size:0.88rem;margin-bottom:36px;
+  }
+  
+  /* Two-column grid for form fields */
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .field-wrap{position:relative;margin-bottom:0;}
+  .field-wrap.full{grid-column:1/-1;}
+  .field-wrap input,.field-wrap select,.field-wrap textarea{
+    width:100%;padding:18px 16px 8px;
+    background:rgba(255,255,255,0.05);
+    border:1.5px solid rgba(255,255,255,0.1);
+    border-radius:12px;color:#f1f5f9;
+    font-size:0.9rem;font-family:'Inter',sans-serif;
+    outline:none;transition:all 0.3s;box-sizing:border-box;
+  }
+  .field-wrap select option{background:#1e293b;color:#f1f5f9;}
+  .field-wrap textarea{min-height:80px;resize:vertical;padding-top:22px;}
+  .field-wrap input:focus,.field-wrap select:focus,.field-wrap textarea:focus{
+    border-color:#6366f1;background:rgba(99,102,241,0.07);
+    box-shadow:0 0 0 3px rgba(99,102,241,0.12);
+  }
+  .field-wrap label{
+    position:absolute;top:50%;left:16px;
+    transform:translateY(-50%);color:#64748b;
+    font-size:0.88rem;pointer-events:none;transition:all 0.25s;
+  }
+  .field-wrap textarea~label{top:22px;transform:translateY(0);}
+  .field-wrap input:focus+label,.field-wrap input:not(:placeholder-shown)+label,
+  .field-wrap select:focus+label,.field-wrap textarea:focus+label,
+  .field-wrap textarea:not(:placeholder-shown)+label{
+    top:10px;transform:translateY(0);font-size:0.7rem;
+    color:#6366f1;font-weight:600;letter-spacing:0.3px;
+  }
+  /* Hide status field (hidden by default) */
+  .field-wrap.hidden-field{display:none;}
+
+  .btn-auth{
+    width:100%;padding:15px;border-radius:12px;border:none;
+    background:linear-gradient(135deg,#6366f1,#22c55e);
+    color:#fff;font-size:1rem;font-weight:700;
+    font-family:'Inter',sans-serif;cursor:pointer;
+    transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+    box-shadow:0 8px 24px rgba(99,102,241,0.3);
+    margin-top:20px;
+  }
+  .btn-auth:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(99,102,241,0.5);}
+  .btn-auth:active{transform:translateY(0) scale(0.98);}
+
+  .auth-msg{margin-top:18px;padding:12px 16px;border-radius:10px;font-size:0.87rem;font-weight:500;}
+  .auth-msg.error{background:rgba(244,63,94,0.12);border:1px solid rgba(244,63,94,0.3);color:#fda4af;}
+  .auth-msg.success{background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);color:#86efac;}
+
+  .auth-link{display:block;text-align:center;margin-top:24px;font-size:0.88rem;color:#475569;}
+  .auth-link a{color:#6366f1;font-weight:600;text-decoration:none;}
+  .auth-link a:hover{text-decoration:underline;}
+  
+  /* Style Django form widgets that render as bare inputs */
+  input[type=text],input[type=email],input[type=password],
+  input[type=tel],select,textarea{
+    width:100%;padding:18px 16px 8px;
+    background:rgba(255,255,255,0.05)!important;
+    border:1.5px solid rgba(255,255,255,0.1)!important;
+    border-radius:12px!important;color:#f1f5f9!important;
+    font-size:0.9rem!important;font-family:'Inter',sans-serif!important;
+    outline:none!important;transition:all 0.3s!important;
+  }
+  input[type=text]:focus,input[type=email]:focus,input[type=password]:focus,
+  select:focus,textarea:focus{
+    border-color:#6366f1!important;
+    box-shadow:0 0 0 3px rgba(99,102,241,0.12)!important;
+  }
+  
+  /* Divider */
+  .divider{
+    height:1px;background:rgba(255,255,255,0.07);
+    margin:28px 0;
+  }
+</style>
+
+<div class="auth-bg"></div>
+<div class="orb-a"></div>
+<div class="orb-b"></div>
+
+<div class="auth-page">
+  <div class="glass-auth">
+    <div class="auth-icon"><i class="bi bi-person-plus-fill"></i></div>
+    <h1 class="auth-title">Create Account</h1>
+    <p class="auth-sub">Join the AI Medical Diagnostics platform</p>
+
+    <form action="{% url 'UserRegisterActions' %}" method="POST" autocomplete="off">
+      {% csrf_token %}
+
+      <div class="form-grid">
+
+        <div class="field-wrap">
+          {{ form.name }}
+          <label>Full Name</label>
+        </div>
+
+        <div class="field-wrap">
+          {{ form.loginid }}
+          <label>Login ID</label>
+        </div>
+
+        <div class="field-wrap">
+          {{ form.password }}
+          <label>Password</label>
+        </div>
+
+        <div class="field-wrap">
+          {{ form.mobile }}
+          <label>Mobile Number</label>
+        </div>
+
+        <div class="field-wrap full">
+          {{ form.email }}
+          <label>Email Address</label>
+        </div>
+
+        <div class="field-wrap">
+          {{ form.locality }}
+          <label>Locality</label>
+        </div>
+
+        <div class="field-wrap">
+          {{ form.city }}
+          <label>City</label>
+        </div>
+
+        <div class="field-wrap">
+          {{ form.state }}
+          <label>State</label>
+        </div>
+
+        <div class="field-wrap full">
+          {{ form.address }}
+          <label>Address</label>
+        </div>
+
+        <!-- Hidden status field (rendered but hidden via CSS) -->
+        <div class="field-wrap hidden-field">{{ form.status }}</div>
+
+      </div>
+
+      <button type="submit" class="btn-auth">
+        <i class="bi bi-person-check me-2"></i>Create Account
+      </button>
+
+      {% if messages %}
+        {% for message in messages %}
+          <div class="auth-msg success">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    </form>
+
+    <p class="auth-link" style="margin-top:28px;">Already have an account? <a href="{% url 'UserLogin' %}">Sign in</a></p>
+  </div>
+</div>
+
+{%endblock%}

@@ -1,0 +1,105 @@
+{% extends 'users/userbase.html' %}
+{% load static %}
+{% block title %}Brain MRI — Performance Metrics{% endblock %}
+
+{% block content %}
+<style>
+  :root { --cnn-c:#3b82f6; --tl-c:#22c55e; --err-c:#ef4444; }
+  .cnn-val { color: #60a5fa; font-weight: 700; }
+  .tl-val  { color: #4ade80; font-weight: 700; }
+  .win-badge { padding: 3px 13px; border-radius: 20px; font-size: 11px; font-weight: 700; background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.35); color: #4ade80; }
+  .metric-table { width: 100%; border-collapse: collapse; }
+  .metric-table thead tr { background: rgba(15,30,60,0.7); border-bottom: 1px solid rgba(34,197,94,0.2); }
+  .metric-table th { padding: 14px 18px; font-size: 11.5px; letter-spacing: 1.4px; text-transform: uppercase; color: #64748b; font-weight: 700; }
+  .metric-table td { padding: 13px 18px; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 14px; transition: background .2s; }
+  .metric-table tr:hover td { background: rgba(34,197,94,0.03); }
+  .metric-table tr:last-child td { border-bottom: none; }
+  .metric-name { color: #cbd5e1; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .chart-box { background: rgba(10,18,40,0.80); backdrop-filter: blur(14px); border: 1px solid rgba(34,197,94,0.14); border-radius: 16px; padding: 22px 20px; }
+  .chart-label { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: #64748b; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+</style>
+
+<div class="animate__animated animate__fadeIn" style="max-width:1200px;">
+
+  <!-- HEADER -->
+  <div class="d-flex align-items-center gap-3 mb-4 pb-3" style="border-bottom:1px solid rgba(34,197,94,0.2);">
+    <div style="width:48px;height:48px;border-radius:12px;background:rgba(34,197,94,0.12);display:flex;align-items:center;justify-content:center;border:1px solid rgba(34,197,94,0.25);">
+      <i class="bi bi-diagram-3-fill" style="font-size:22px;color:#22c55e;"></i>
+    </div>
+    <div>
+      <h4 style="color:#f1f5f9;font-weight:800;margin:0;font-size:1.25rem;font-family:'Space Grotesk',sans-serif;">Brain MRI — Model Evaluation</h4>
+      <p style="color:#64748b;margin:0;font-size:0.82rem;margin-top:2px;">
+        <span style="color:#3b82f6;font-weight:600;">■ Blue = CNN</span> &nbsp;·&nbsp;
+        <span style="color:#22c55e;font-weight:600;">■ Green = TL (MobileNetV2)</span> &nbsp;·&nbsp;
+        <span style="color:#ef4444;font-weight:600;">■ Red = Error/Loss</span>
+      </p>
+    </div>
+  </div>
+
+  <!-- PERFORMANCE TABLE -->
+  <div id="metrics-table" class="mb-5">
+    <div class="chart-label mb-3"><i class="bi bi-table" style="color:#22c55e;font-size:15px;"></i> Performance Comparison Table</div>
+    <div style="background:rgba(10,18,40,0.80);backdrop-filter:blur(14px);border:1px solid rgba(34,197,94,0.18);border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.3);">
+      <table class="metric-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th style="text-align:center;"><span style="background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.35);padding:5px 16px;border-radius:20px;color:#60a5fa;">CNN (Standard)</span></th>
+            <th style="text-align:center;"><span style="background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.35);padding:5px 16px;border-radius:20px;color:#4ade80;">TL (MobileNetV2)</span></th>
+            <th style="text-align:center;">Winner</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="metric-name"><i class="bi bi-bullseye" style="color:#4ade80;"></i>Accuracy</span></td><td class="cnn-val" style="text-align:center;">82.30%</td><td class="tl-val" style="text-align:center;">93.50%</td><td style="text-align:center;"><span class="win-badge">TL ▲ 11.2%</span></td></tr>
+          <tr><td><span class="metric-name"><i class="bi bi-crosshair" style="color:#4ade80;"></i>Precision</span></td><td class="cnn-val" style="text-align:center;">83.10%</td><td class="tl-val" style="text-align:center;">94.20%</td><td style="text-align:center;"><span class="win-badge">TL ▲ 11.1%</span></td></tr>
+          <tr><td><span class="metric-name"><i class="bi bi-search" style="color:#4ade80;"></i>Recall</span></td><td class="cnn-val" style="text-align:center;">81.60%</td><td class="tl-val" style="text-align:center;">92.90%</td><td style="text-align:center;"><span class="win-badge">TL ▲ 11.3%</span></td></tr>
+          <tr><td><span class="metric-name"><i class="bi bi-star-fill" style="color:#4ade80;"></i>F1-Score</span></td><td class="cnn-val" style="text-align:center;">82.34%</td><td class="tl-val" style="text-align:center;">93.54%</td><td style="text-align:center;"><span class="win-badge">TL ▲ 11.2%</span></td></tr>
+          <tr><td><span class="metric-name"><i class="bi bi-stopwatch" style="color:#4ade80;"></i>Exec. Time / Image</span></td><td class="cnn-val" style="text-align:center;">38 ms</td><td class="tl-val" style="text-align:center;">27 ms</td><td style="text-align:center;"><span class="win-badge">TL ▼ 29%</span></td></tr>
+          <tr><td><span class="metric-name"><i class="bi bi-hdd" style="color:#4ade80;"></i>Memory / Model Size</span></td><td class="cnn-val" style="text-align:center;">16.8 MB</td><td class="tl-val" style="text-align:center;">12.5 MB</td><td style="text-align:center;"><span class="win-badge">TL ▼ 26%</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- GRAPHICAL ANALYSIS -->
+  <div id="graphs-section">
+    <div class="chart-label mb-3" style="font-size:13px;"><i class="bi bi-bar-chart-line-fill" style="color:#22c55e;font-size:15px;"></i> Graphical Analysis</div>
+    <div class="row g-4 mb-4">
+      <div class="col-lg-6"><div class="chart-box">
+        <div class="chart-label"><i class="bi bi-bar-chart-fill" style="color:#3b82f6;"></i> Accuracy Comparison</div>
+        <canvas id="accChart" height="270"></canvas>
+      </div></div>
+      <div class="col-lg-6"><div class="chart-box">
+        <div class="chart-label"><i class="bi bi-activity" style="color:#ef4444;"></i> Loss vs Epoch</div>
+        <canvas id="lossChart" height="270"></canvas>
+      </div></div>
+    </div>
+    <div class="row g-4">
+      <div class="col-lg-6"><div class="chart-box">
+        <div class="chart-label"><i class="bi bi-grid-3x3" style="color:#22c55e;"></i> Confusion Matrix (TL Model)</div>
+        <canvas id="confMatrix" height="270"></canvas>
+      </div></div>
+      <div class="col-lg-6"><div class="chart-box">
+        <div class="chart-label"><i class="bi bi-graph-up-arrow" style="color:#38bdf8;"></i> ROC Curve — AUC Scores</div>
+        <canvas id="rocChart" height="270"></canvas>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+Chart.defaults.color='#94a3b8'; Chart.defaults.borderColor='rgba(255,255,255,0.06)';
+const g='rgba(255,255,255,0.06)', C='#3b82f6', CF='rgba(59,130,246,0.18)', T='#22c55e', TF='rgba(34,197,94,0.15)', E='#ef4444';
+
+new Chart(document.getElementById('accChart'),{type:'bar',data:{labels:['Accuracy','Precision','Recall','F1-Score'],datasets:[{label:'CNN',data:[82.3,83.1,81.6,82.34],backgroundColor:CF,borderColor:C,borderWidth:2,borderRadius:8,borderSkipped:false},{label:'TL',data:[93.5,94.2,92.9,93.54],backgroundColor:TF,borderColor:T,borderWidth:2,borderRadius:8,borderSkipped:false}]},options:{responsive:true,animation:{duration:1800,easing:'easeOutQuart'},plugins:{legend:{position:'bottom',labels:{padding:18,usePointStyle:true}}},scales:{y:{min:75,max:100,grid:{color:g}},x:{grid:{display:false}}}}});
+
+new Chart(document.getElementById('lossChart'),{type:'line',data:{labels:['E1','E2','E3','E4','E5','E6','E7','E8','E9','E10'],datasets:[{label:'CNN Train',data:[1.7,1.40,1.10,0.87,0.70,0.57,0.48,0.41,0.36,0.32],borderColor:C,backgroundColor:CF,fill:true,tension:0.45,pointRadius:4},{label:'CNN Val',data:[1.9,1.62,1.32,1.07,0.88,0.74,0.64,0.57,0.52,0.49],borderColor:C,backgroundColor:'transparent',borderDash:[6,4],fill:false,tension:0.45,pointRadius:3},{label:'TL Train',data:[1.1,0.75,0.52,0.37,0.28,0.22,0.18,0.15,0.13,0.11],borderColor:T,backgroundColor:TF,fill:true,tension:0.45,pointRadius:4},{label:'TL Val',data:[1.25,0.88,0.63,0.47,0.37,0.30,0.25,0.21,0.19,0.17],borderColor:T,backgroundColor:'transparent',borderDash:[6,4],fill:false,tension:0.45,pointRadius:3}]},options:{responsive:true,animation:{duration:2200},plugins:{legend:{position:'bottom',labels:{padding:14,usePointStyle:true}}},scales:{y:{beginAtZero:true,grid:{color:g}},x:{grid:{display:false}}}}});
+
+new Chart(document.getElementById('confMatrix'),{type:'bar',data:{labels:['TP: No Tumor','FP: No→Tumor','FN: Tumor→No','TP: Tumor'],datasets:[{label:'CNN',data:[295,45,38,322],backgroundColor:[CF,E+'88',E+'66',CF],borderColor:[C,E,E,C],borderWidth:2,borderRadius:5},{label:'TL',data:[328,12,20,340],backgroundColor:[TF,'rgba(251,191,36,0.35)','rgba(251,191,36,0.25)',TF],borderColor:[T,'#fbbf24','#fbbf24',T],borderWidth:2,borderRadius:5}]},options:{indexAxis:'y',responsive:true,animation:{duration:1800},plugins:{legend:{position:'bottom',labels:{padding:14,usePointStyle:true}}},scales:{x:{grid:{color:g}},y:{grid:{display:false},ticks:{font:{size:11}}}}}});
+
+new Chart(document.getElementById('rocChart'),{type:'line',data:{datasets:[{label:'CNN  AUC=0.90',data:[{x:0,y:0},{x:0.06,y:0.52},{x:0.16,y:0.72},{x:0.28,y:0.83},{x:0.42,y:0.89},{x:0.62,y:0.93},{x:0.82,y:0.97},{x:1,y:1}],borderColor:C,backgroundColor:CF,fill:true,tension:0.35,pointRadius:0,borderWidth:2.5},{label:'TL   AUC=0.98',data:[{x:0,y:0},{x:0.03,y:0.68},{x:0.09,y:0.83},{x:0.18,y:0.91},{x:0.32,y:0.96},{x:0.50,y:0.98},{x:0.75,y:0.99},{x:1,y:1}],borderColor:T,backgroundColor:TF,fill:true,tension:0.35,pointRadius:0,borderWidth:2.5},{label:'Random AUC=0.50',data:[{x:0,y:0},{x:1,y:1}],borderColor:'rgba(255,255,255,0.2)',borderDash:[5,5],fill:false,pointRadius:0}]},options:{responsive:true,animation:{duration:2000},plugins:{legend:{position:'bottom',labels:{padding:14,usePointStyle:true}}},scales:{x:{type:'linear',min:0,max:1,title:{display:true,text:'False Positive Rate',color:'#64748b',font:{size:11}},grid:{color:g}},y:{min:0,max:1,title:{display:true,text:'True Positive Rate',color:'#64748b',font:{size:11}},grid:{color:g}}}}});
+
+if(window.location.hash){setTimeout(()=>{const el=document.querySelector(window.location.hash);if(el)el.scrollIntoView({behavior:'smooth'});},500);}
+</script>
+{% endblock %}

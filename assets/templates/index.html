@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Medical Imaging Diagnosis Using Artificial Intelligence and Deep Learning</title>
+  <meta name="description" content="State-of-the-art AI Medical Diagnosis Platform using Deep Learning">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <!-- Bootstrap -->
+  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #0ea5e9;
+      --accent:  #6366f1;
+      --danger:  #f43f5e;
+      --dark:    #020817;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; font-family: 'Inter', sans-serif; }
+
+    /* ── Dark full-page hero ── */
+    body {
+      background: var(--dark);
+      color: #e2e8f0;
+      overflow-x: hidden;
+    }
+
+    /* ══ VIDEO BACKGROUND ══ */
+    #bg-video {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      min-width: 100%; min-height: 100%;
+      object-fit: cover;
+      z-index: -2;
+      pointer-events: none;
+    }
+
+    /* Two-layer overlay:
+       Layer 1: deep navy base for colour tone
+       Layer 2: blue gradient vignette for futuristic depth */
+    #bg-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background:
+        linear-gradient(
+          135deg,
+          rgba(2, 8, 23, 0.82)   0%,
+          rgba(4, 18, 52, 0.75) 40%,
+          rgba(6, 30, 80, 0.70) 70%,
+          rgba(2, 8, 23, 0.85) 100%
+        );
+    }
+
+    /* ── Floating icons plane ── */
+    .icons-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .float-icon {
+      position: absolute;
+      font-size: 1.6rem;
+      color: rgba(14,165,233,0.15);
+      animation: rise 18s linear infinite;
+    }
+    @keyframes rise {
+      0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { transform: translateY(-10vh)  rotate(360deg); opacity: 0; }
+    }
+
+    /* ── NAVBAR ── */
+    #header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      background: rgba(2,8,23,0.7);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 16px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: #fff;
+      text-decoration: none;
+      letter-spacing: -0.3px;
+    }
+    .logo-text span { color: var(--primary); }
+
+    .nav-links { display: flex; gap: 12px; align-items: center; list-style: none; }
+    .nav-link-plain {
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+    .nav-link-plain:hover { color: #fff; background: rgba(255,255,255,0.07); }
+
+    /* ── HERO ── */
+    #hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      z-index: 10;
+    }
+    .hero-inner { max-width: 900px; margin: 0 auto; }
+
+
+
+    .hero-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.4rem, 6vw, 4.2rem);
+      font-weight: 800;
+      line-height: 1.15;
+      color: #f8fafc;
+      letter-spacing: -1.5px;
+      animation: fadeSlideDown 0.9s 0.1s ease both;
+      margin-bottom: 24px;
+    }
+    .hero-title .grad {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+
+
+    /* ── PREMIUM BUTTONS ── */
+    .btn-group-hero { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; animation: fadeSlideUp 1s 0.35s ease both; }
+
+    .btn-glow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 40px;
+      border-radius: 48px;
+      font-weight: 700;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      letter-spacing: 0.3px;
+    }
+    .btn-glow::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      opacity: 0;
+      transition: opacity 0.3s;
+      background: radial-gradient(circle at 50% 120%, rgba(255,255,255,0.3), transparent 60%);
+    }
+    .btn-glow:hover::before { opacity: 1; }
+    .btn-glow:hover { transform: translateY(-3px); }
+    .btn-glow:active { transform: translateY(0) scale(0.97); }
+
+    /* ripple */
+    .btn-glow .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.35);
+      transform: scale(0);
+      animation: rippleEffect 0.6s linear;
+      pointer-events: none;
+    }
+    @keyframes rippleEffect {
+      to { transform: scale(4); opacity: 0; }
+    }
+
+    .btn-primary-glow {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff;
+      box-shadow: 0 0 30px rgba(14,165,233,0.4), 0 8px 24px rgba(0,0,0,0.2);
+    }
+    .btn-primary-glow:hover {
+      box-shadow: 0 0 50px rgba(14,165,233,0.7), 0 12px 30px rgba(0,0,0,0.3);
+      color: #fff;
+    }
+
+    .btn-outline-glow {
+      background: rgba(255,255,255,0.04);
+      color: #e2e8f0;
+      border: 1.5px solid rgba(255,255,255,0.15);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+    .btn-outline-glow:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.35);
+      box-shadow: 0 0 30px rgba(255,255,255,0.1);
+      color: #fff;
+    }
+
+    /* ── FEATURE CARDS ── */
+    .features {
+      position: relative; z-index: 10;
+      padding: 80px 24px;
+      background: rgba(255,255,255,0.01);
+    }
+    .section-label {
+      text-align: center;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 12px;
+    }
+    .section-title {
+      text-align: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1.7rem, 3.5vw, 2.4rem);
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 56px;
+    }
+
+    .glass-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 36px 28px;
+      text-align: left;
+      transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+      backdrop-filter: blur(8px);
+      position: relative;
+      overflow: hidden;
+    }
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(circle, rgba(14,165,233,0.06) 0%, transparent 60%);
+      transition: all 0.5s;
+      opacity: 0;
+    }
+    .glass-card:hover { transform: translateY(-8px); border-color: rgba(14,165,233,0.3); box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 30px rgba(14,165,233,0.1); }
+    .glass-card:hover::before { opacity: 1; }
+
+    .card-icon {
+      width: 56px; height: 56px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      margin-bottom: 20px;
+    }
+    .card-title { font-weight: 700; font-size: 1.1rem; color: #f1f5f9; margin-bottom: 10px; }
+    .card-desc  { color: #64748b; font-size: 0.9rem; line-height: 1.7; }
+
+    /* ── STATS SECTION ── */
+    .stats-section { position: relative; z-index: 10; padding: 60px 24px; }
+    .stat-box { text-align: center; padding: 24px; }
+    .stat-num {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat-lbl { color: #64748b; font-size: 0.88rem; font-weight: 500; margin-top: 6px; }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative; z-index: 10;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      padding: 40px 24px;
+      text-align: center;
+      color: #475569;
+      font-size: 0.85rem;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeSlideDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Pulse on "Get Started" */
+    @keyframes pulseGlow {
+      0%,100% { box-shadow: 0 0 30px rgba(14,165,233,0.4), 0 8px 24px rgba(0,0,0,0.2); }
+      50%      { box-shadow: 0 0 60px rgba(14,165,233,0.8), 0 8px 24px rgba(0,0,0,0.2); }
+    }
+    .btn-primary-glow { animation: pulseGlow 3s ease-in-out infinite; }
+    .btn-primary-glow:hover { animation: none; }
+  </style>
+</head>
+
+<body>
+
+  <!-- Full-Screen Video Background -->
+  <video id="bg-video" autoplay loop muted playsinline preload="auto">
+    <source src="{% static 'background.mp4' %}" type="video/mp4">
+  </video>
+  <!-- Deep blue translucent overlay for futuristic readability -->
+  <div id="bg-overlay"></div>
+
+  <!-- Floating Medical Icons (renders on top of video) -->
+  <div class="icons-layer" aria-hidden="true">
+    <i class="bi bi-heart-pulse float-icon" style="left:5%;  animation-delay:0s;  animation-duration:14s;"></i>
+    <i class="bi bi-lungs     float-icon" style="left:14%; animation-delay:3s;  animation-duration:18s;"></i>
+    <i class="bi bi-activity  float-icon" style="left:25%; animation-delay:6s;  animation-duration:12s;"></i>
+    <i class="bi bi-eyedropper float-icon" style="left:38%; animation-delay:9s;  animation-duration:20s;"></i>
+    <i class="bi bi-virus2    float-icon" style="left:52%; animation-delay:2s;  animation-duration:16s;"></i>
+    <i class="bi bi-capsule   float-icon" style="left:65%; animation-delay:5s;  animation-duration:13s;"></i>
+    <i class="bi bi-bandaid   float-icon" style="left:76%; animation-delay:8s;  animation-duration:17s;"></i>
+    <i class="bi bi-hospital  float-icon" style="left:88%; animation-delay:1s;  animation-duration:15s;"></i>
+    <i class="bi bi-diagram-3 float-icon" style="left:42%; animation-delay:11s; animation-duration:19s; font-size:2.2rem; color:rgba(99,102,241,0.15);"></i>
+    <i class="bi bi-cpu       float-icon" style="left:20%; animation-delay:14s; animation-duration:22s; font-size:1.2rem; color:rgba(244,63,94,0.12);"></i>
+  </div>
+
+  <!-- ═══ HEADER ═══ -->
+  <header id="header">
+    <a class="logo-text" href="#"><i class="bi bi-heart-pulse me-2"></i>AI<span>Medical</span></a>
+    <ul class="nav-links">
+      <li><a class="nav-link-plain" href="/">Home</a></li>
+      <li><a class="nav-link-plain" href="{% url 'UserLogin' %}">User Login</a></li>
+      <li><a class="nav-link-plain" href="{% url 'AdminLogin' %}">Admin Login</a></li>
+      <li>
+        <a href="{% url 'UserRegister' %}" class="btn-glow btn-primary-glow" style="padding:10px 24px; font-size:0.88rem;">
+          Register <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+      </li>
+    </ul>
+  </header>
+
+  <!-- ═══ HERO ═══ -->
+  <section id="hero">
+    <div class="hero-inner">
+      <h1 class="hero-title">
+        Medical Imaging Diagnosis Using<br>
+        <span class="grad">Artificial Intelligence</span> and Deep Learning
+      </h1>
+
+      <div class="btn-group-hero">
+        <a href="{% url 'UserRegister' %}" class="btn-glow btn-primary-glow" id="btnGetStarted">
+          <i class="bi bi-rocket-takeoff"></i> Get Started
+        </a>
+        <a href="{% url 'UserLogin' %}" class="btn-glow btn-outline-glow">
+          <i class="bi bi-box-arrow-in-right"></i> Log In
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ STATS ═══ -->
+  <section class="stats-section">
+    <div class="container">
+      <div class="row g-4 justify-content-center">
+        <div class="col-6 col-md-3"><div class="stat-box">
+          <div class="stat-num">95%+</div><div class="stat-lbl">Model Accuracy</div>
+        </div></div>
+        <div class="col-6 col-md-3"><div class="stat-box">
+          <div class="stat-num">3</div><div class="stat-lbl">Medical Specialties</div>
+        </div></div>
+        <div class="col-6 col-md-3"><div class="stat-box">
+          <div class="stat-num">2</div><div class="stat-lbl">AI Architectures</div>
+        </div></div>
+        <div class="col-6 col-md-3"><div class="stat-box">
+          <div class="stat-num">&lt;3s</div><div class="stat-lbl">Analysis Time</div>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FEATURES ═══ -->
+  <section class="features">
+    <div class="container">
+      <p class="section-label">Capabilities</p>
+      <h2 class="section-title">What Our Platform Diagnoses</h2>
+      <div class="row g-4">
+
+        <div class="col-md-4">
+          <div class="glass-card">
+            <div class="card-icon" style="background:rgba(14,165,233,0.12); color: #0ea5e9;"><i class="bi bi-lungs-fill"></i></div>
+            <div class="card-title">Chest X-Ray Analysis</div>
+            <div class="card-desc">Deep Learning-powered detection of respiratory conditions including pneumonia, nodules, and infiltrates using multi-label classification.</div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="glass-card">
+            <div class="card-icon" style="background:rgba(244,63,94,0.12); color: #f43f5e;"><i class="bi bi-gender-female"></i></div>
+            <div class="card-title">Mammography Screening</div>
+            <div class="card-desc">AI-assisted mammography analysis for early detection of benign and malignant patterns with Grad-CAM heatmap visualization.</div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="glass-card">
+            <div class="card-icon" style="background:rgba(99,102,241,0.12); color: #6366f1;"><i class="bi bi-diagram-3-fill"></i></div>
+            <div class="card-title">MRI Stroke Detection</div>
+            <div class="card-desc">Rapid identification of brain tumor presence in MRI scans using CNN and MobileNetV2 Transfer Learning with side-by-side model comparison.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer>
+    <div>
+      <span style="color:#e2e8f0; font-weight:700;">AI Medical Diagnostics</span> — 
+      Powered by Deep Learning & Transfer Learning &copy; 2026
+    </div>
+  </footer>
+
+  <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script>
+    // Ripple effect on all glow buttons
+    document.querySelectorAll('.btn-glow').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        const ripple = document.createElement('span');
+        ripple.className = 'ripple';
+        const rect = btn.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        ripple.style.width = ripple.style.height = size + 'px';
+        ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+        ripple.style.top  = (e.clientY - rect.top  - size / 2) + 'px';
+        btn.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 700);
+      });
+    });
+  </script>
+
+</body>
+</html>

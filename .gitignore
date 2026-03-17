@@ -1,0 +1,14 @@
+# Environments
+medicalenv/
+
+# Python Cache
+__pycache__/
+*.pyc
+
+# Database
+db.sqlite3
+
+# Large Datasets & Models
+media/
+*.h5
+*.csv

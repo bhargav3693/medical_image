@@ -1,0 +1,47 @@
+﻿Backed up to media/ChestModel.h5.bak
+python : Traceback 
+(most recent call 
+last):
+At line:1 char:1
++ python fix_keras_h5_s
+lashes.py 
+media/ChestModel.h5 > 
+fix_out.txt 2>&1 ...
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (Traceback (mo   
+ st recent call las    
+t)::String) [], Re    
+moteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+  File "C:\Users\botta\
+Desktop\project\medical
+s\fix_keras_h5_slashes.
+py", line 95, in 
+<module>
+    remove_slashes_from
+_keras_h5(sys.argv[1])
+    ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\botta\
+Desktop\project\medical
+s\fix_keras_h5_slashes.
+py", line 14, in remove
+_slashes_from_keras_h5
+    config_str = f.attr
+s['model_config'].decod
+e('utf-8')
+                 ^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
+^
+AttributeError: 'str' 
+object has no 
+attribute 'decode'. 
+Did you mean: 'encode'?

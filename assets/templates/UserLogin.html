@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}User Login — AI Medical Diagnostics{% endblock %}
+{% block user_login %}active{% endblock %}
+
+{% block content %}
+<style>
+  /* ═══ Dark Full-Page Layout ═══ */
+  body {
+    background: #020817 !important;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* Animated scrolling grid */
+  .auth-bg {
+    position: fixed;
+    inset: 0;
+    background:
+      linear-gradient(rgba(14,165,233,0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(14,165,233,0.045) 1px, transparent 1px);
+    background-size: 55px 55px;
+    animation: gridMove 25s linear infinite;
+    z-index: 0;
+  }
+  @keyframes gridMove {
+    0%   { background-position: 0 0, 0 0; }
+    100% { background-position: 55px 55px, 55px 55px; }
+  }
+
+  .orb-a {
+    position: fixed; width:420px; height:420px;
+    background: rgba(14,165,233,0.12); border-radius:50%;
+    filter: blur(90px); top:-80px; left:-80px;
+    animation: driftA 14s ease-in-out infinite;
+    z-index: 0;
+  }
+  .orb-b {
+    position: fixed; width:380px; height:380px;
+    background: rgba(99,102,241,0.12); border-radius:50%;
+    filter: blur(80px); bottom:-60px; right:-60px;
+    animation: driftB 10s ease-in-out infinite;
+    z-index: 0;
+  }
+  @keyframes driftA { 0%,100%{transform:translate(0,0);} 50%{transform:translate(40px,30px);} }
+  @keyframes driftB { 0%,100%{transform:translate(0,0);} 50%{transform:translate(-30px,-25px);} }
+
+  /* Auth page wrapper */
+  .auth-page {
+    position: relative; z-index: 10;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 20px 60px;
+  }
+
+  /* ═══ GLASSMORPHISM CARD ═══ */
+  .glass-auth {
+    width: 100%;
+    max-width: 460px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 24px;
+    padding: 48px 44px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.05),
+      0 24px 60px rgba(0,0,0,0.5),
+      inset 0 1px 0 rgba(255,255,255,0.12);
+    animation: slideUp 0.7s cubic-bezier(0.4,0,0.2,1) both;
+  }
+  @keyframes slideUp {
+    from { opacity:0; transform: translateY(30px) scale(0.97); }
+    to   { opacity:1; transform: translateY(0)    scale(1); }
+  }
+
+  .auth-icon {
+    width: 64px; height: 64px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #0ea5e9, #6366f1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem; color: #fff;
+    margin: 0 auto 20px;
+    box-shadow: 0 8px 24px rgba(14,165,233,0.35);
+    animation: iconPop 0.6s 0.2s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+  @keyframes iconPop {
+    from { opacity:0; transform: scale(0.5); }
+    to   { opacity:1; transform: scale(1); }
+  }
+
+  .auth-title {
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+    font-size: 1.7rem;
+    font-weight: 800;
+    text-align: center;
+    color: #f8fafc;
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+  }
+  .auth-sub {
+    text-align: center;
+    color: #64748b;
+    font-size: 0.88rem;
+    margin-bottom: 36px;
+  }
+
+  /* ── Floating-label input ── */
+  .field-wrap {
+    position: relative;
+    margin-bottom: 22px;
+  }
+  .field-wrap input {
+    width: 100%;
+    padding: 18px 16px 8px;
+    background: rgba(255,255,255,0.05);
+    border: 1.5px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    color: #f1f5f9;
+    font-size: 0.95rem;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: all 0.3s;
+    box-sizing: border-box;
+  }
+  .field-wrap input:focus {
+    border-color: #0ea5e9;
+    background: rgba(14,165,233,0.07);
+    box-shadow: 0 0 0 3px rgba(14,165,233,0.12);
+  }
+  .field-wrap label {
+    position: absolute;
+    top: 50%; left: 16px;
+    transform: translateY(-50%);
+    color: #64748b;
+    font-size: 0.92rem;
+    pointer-events: none;
+    transition: all 0.25s;
+  }
+  .field-wrap input:focus + label,
+  .field-wrap input:not(:placeholder-shown) + label {
+    top: 10px;
+    transform: translateY(0);
+    font-size: 0.72rem;
+    color: #0ea5e9;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+
+  /* Submit button */
+  .btn-auth {
+    width: 100%;
+    padding: 15px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, #0ea5e9, #6366f1);
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 0 8px 24px rgba(14,165,233,0.3);
+    margin-top: 8px;
+  }
+  .btn-auth:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(14,165,233,0.5);
+  }
+  .btn-auth:active { transform: translateY(0) scale(0.98); }
+
+  /* Clear / secondary button */
+  .btn-auth-secondary {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1.5px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+    color: #94a3b8;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 10px;
+  }
+  .btn-auth-secondary:hover {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.25);
+    color: #e2e8f0;
+  }
+
+  /* Messages */
+  .auth-msg {
+    margin-top: 18px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 0.87rem;
+    font-weight: 500;
+  }
+  .auth-msg.error   { background: rgba(244,63,94,0.12); border: 1px solid rgba(244,63,94,0.3); color: #fda4af; }
+  .auth-msg.success { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.3); color: #86efac; }
+
+  .auth-link {
+    display: block;
+    text-align: center;
+    margin-top: 24px;
+    font-size: 0.88rem;
+    color: #475569;
+    text-decoration: none;
+  }
+  .auth-link a { color: #0ea5e9; font-weight: 600; text-decoration: none; }
+  .auth-link a:hover { text-decoration: underline; }
+
+  /* Divider */
+  .auth-divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 24px 0;
+    color: #334155; font-size: 0.8rem;
+  }
+  .auth-divider::before, .auth-divider::after {
+    content:''; flex:1; height:1px; background: rgba(255,255,255,0.08);
+  }
+</style>
+
+<!-- Background -->
+<div class="auth-bg"></div>
+<div class="orb-a"></div>
+<div class="orb-b"></div>
+
+<div class="auth-page">
+  <div class="glass-auth">
+    <div class="auth-icon"><i class="bi bi-person-check-fill"></i></div>
+    <h1 class="auth-title">Welcome Back</h1>
+    <p class="auth-sub">Sign in to access the AI diagnostic platform</p>
+
+    <form action="{% url 'UserLoginCheck' %}" method="POST" autocomplete="off">
+      {% csrf_token %}
+
+      <div class="field-wrap">
+        <input type="text" id="loginid" name="loginid" placeholder=" " required>
+        <label for="loginid">Login ID</label>
+      </div>
+
+      <div class="field-wrap">
+        <input type="password" id="pswd" name="pswd" placeholder=" " required>
+        <label for="pswd">Password</label>
+      </div>
+
+      <button type="submit" class="btn-auth">
+        <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+      </button>
+      <button type="reset" class="btn-auth-secondary">
+        <i class="bi bi-x-circle me-2"></i>Clear
+      </button>
+
+      {% if messages %}
+        {% for message in messages %}
+          <div class="auth-msg {% if 'error' in message %}error{% else %}success{% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    </form>
+
+    <div class="auth-divider">or</div>
+    <p class="auth-link">Don't have an account? <a href="{% url 'UserRegister' %}">Register now</a></p>
+    <p class="auth-link" style="margin-top:10px;">Admin? <a href="{% url 'AdminLogin' %}">Admin Login</a></p>
+  </div>
+</div>
+{% endblock %}

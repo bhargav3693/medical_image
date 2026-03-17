@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>{% block title %}AI Medical Diagnostics{% endblock %}</title>
+  <meta name="description" content="AI Medical Imaging Diagnosis System">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <!-- Bootstrap -->
+  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <!-- Animate.css -->
+  <link href="{% static 'vendor/animate.css/animate.min.css' %}" rel="stylesheet">
+</head>
+
+<style>
+  /* ══════════════════════════════════════
+     GLOBAL RESET & TYPOGRAPHY
+  ══════════════════════════════════════ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #020817;
+    color: #e2e8f0;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ══════════════════════════════════════
+     GLASSMORPHISM SIDEBAR
+  ══════════════════════════════════════ */
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 100vh;
+    width: 260px;
+    background: rgba(5, 10, 28, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-right: 1px solid rgba(56, 189, 248, 0.18);
+    box-shadow: 4px 0 40px rgba(0,0,0,0.6);
+    z-index: 1000;
+    overflow-y: auto;
+    overflow-x: hidden;
+    transition: all 0.3s ease;
+  }
+
+  /* Custom scrollbar */
+  .sidebar::-webkit-scrollbar { width: 3px; }
+  .sidebar::-webkit-scrollbar-track { background: transparent; }
+  .sidebar::-webkit-scrollbar-thumb { background: rgba(56,189,248,0.3); border-radius: 2px; }
+
+  /* Header */
+  .sb-header {
+    padding: 22px 20px 18px;
+    border-bottom: 1px solid rgba(56,189,248,0.12);
+    background: linear-gradient(135deg, rgba(56,189,248,0.06), rgba(99,102,241,0.04));
+    text-align: center;
+  }
+  .sb-logo-icon {
+    font-size: 34px;
+    background: linear-gradient(135deg, #38bdf8, #818cf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: block;
+    margin-bottom: 6px;
+  }
+  .sb-logo-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #f1f5f9, #94a3b8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.5px;
+  }
+  .sb-logo-sub {
+    font-size: 9.5px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: rgba(56,189,248,0.45);
+    margin-top: 3px;
+  }
+
+  /* Section label */
+  .sb-label {
+    font-size: 9.5px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(100,116,139,0.8);
+    font-weight: 700;
+    padding: 16px 18px 5px;
+    display: block;
+  }
+
+  /* Parent menu items */
+  .sb-menu { list-style: none; padding: 4px 0; margin: 0; }
+  .sb-menu > li { margin: 1px 0; }
+
+  .sb-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    margin: 2px 8px;
+    width: calc(100% - 16px);
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #94a3b8;
+    text-decoration: none !important;
+    transition: all 0.22s ease;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+  }
+  .sb-link i { font-size: 16px; min-width: 20px; flex-shrink: 0; }
+  .sb-link .sb-chevron { font-size: 10px; margin-left: auto; transition: transform 0.25s ease; }
+  .sb-link:not(.collapsed) .sb-chevron { transform: rotate(180deg); }
+
+  .sb-link:hover { background: rgba(56,189,248,0.09); color: #e2e8f0; }
+  .sb-link.active-parent { background: rgba(56,189,248,0.09); color: #e2e8f0; }
+
+  /* Chest = Blue, Mammography = Red/Pink, Brain = Green, Dashboard/Logout = cool */
+  .sb-chest i.icon-color  { color: #3b82f6; }
+  .sb-mammo i.icon-color  { color: #ef4444; }
+  .sb-brain i.icon-color  { color: #22c55e; }
+  .sb-dash  i.icon-color  { color: #38bdf8; }
+
+  /* Sub-menu */
+  .sb-sub {
+    list-style: none;
+    padding: 3px 0;
+    margin: 0 8px 3px 34px;
+    border-left: 2px solid rgba(56,189,248,0.15);
+    border-radius: 0 6px 6px 0;
+  }
+  .sb-sub li a {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 10px;
+    font-size: 12.5px;
+    font-weight: 400;
+    color: #64748b;
+    text-decoration: none !important;
+    border-radius: 5px;
+    margin: 1px 3px;
+    transition: all 0.2s ease;
+  }
+  .sb-sub li a i { font-size: 12px; min-width: 14px; }
+  .sb-sub li a:hover { color: #38bdf8; background: rgba(56,189,248,0.07); }
+  .sb-sub li a.active { color: #38bdf8; background: rgba(56,189,248,0.1); font-weight: 600; }
+
+  /* Logout */
+  .sb-logout { color: #f87171 !important; }
+  .sb-logout:hover { background: rgba(248,113,113,0.09) !important; color: #fca5a5 !important; }
+
+  /* ══════════════════════════════════════
+     TOP HEADER (dark glass)
+  ══════════════════════════════════════ */
+  #topbar {
+    position: fixed;
+    top: 0;
+    left: 260px;
+    width: calc(100% - 260px);
+    height: 64px;
+    background: rgba(5, 10, 28, 0.90);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(56,189,248,0.12);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    z-index: 900;
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    gap: 12px;
+  }
+  .topbar-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #f1f5f9;
+    letter-spacing: -0.3px;
+  }
+  .topbar-title span { color: #22c55e; }
+
+  /* ══════════════════════════════════════
+     MAIN CONTENT
+  ══════════════════════════════════════ */
+  #main {
+    margin-left: 260px;
+    padding: 24px 28px;
+    margin-top: 64px;
+    min-height: calc(100vh - 64px);
+  }
+
+  /* Glass card reusable */
+  .glass-card {
+    background: rgba(12, 20, 45, 0.78);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-radius: 16px;
+    border: 1px solid rgba(56,189,248,0.14);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+  }
+
+  /* Strict CNN=Blue, TL=Green for chart/table references */
+  :root {
+    --cnn-color: #3b82f6;
+    --tl-color:  #22c55e;
+    --warn-color: #ef4444;
+  }
+</style>
+
+<body>
+
+  <!-- ══════ SIDEBAR ══════ -->
+  <aside class="sidebar">
+
+    <!-- Header -->
+    <div class="sb-header">
+      <i class="bi bi-heart-pulse sb-logo-icon"></i>
+      <div class="sb-logo-title">AI Medical</div>
+      <div class="sb-logo-sub">Diagnostic Platform</div>
+    </div>
+
+    <ul class="sb-menu">
+
+      <!-- MAIN MENU -->
+      <li><span class="sb-label">Main Menu</span></li>
+      <li>
+        <a href="{% url 'UserHome' %}" class="sb-link sb-dash {% if request.resolver_match.url_name == 'UserHome' %}active-parent{% endif %}">
+          <i class="bi bi-grid-1x2-fill icon-color"></i>
+          <span>Dashboard</span>
+        </a>
+      </li>
+
+      <!-- DATASETS -->
+      <li><span class="sb-label" style="margin-top: 8px;">Datasets</span></li>
+
+      <!-- ── CHEST X-RAY (Blue) ── -->
+      <li>
+        <a class="sb-link sb-chest {% if request.resolver_match.url_name == 'chest' or request.resolver_match.url_name == 'chest_metrics' %}active-parent{% endif %}"
+           data-bs-toggle="collapse" href="#chestCollapse" role="button">
+          <i class="bi bi-lungs-fill icon-color"></i>
+          <span>Chest X-Ray</span>
+          <i class="bi bi-chevron-down sb-chevron"></i>
+        </a>
+        <div class="collapse {% if request.resolver_match.url_name == 'chest' or request.resolver_match.url_name == 'chest_metrics' %}show{% endif %}" id="chestCollapse">
+          <ul class="sb-sub">
+            <li>
+              <a href="{% url 'chest' %}" class="{% if request.resolver_match.url_name == 'chest' %}active{% endif %}">
+                <i class="bi bi-activity" style="color:#3b82f6;"></i> Diagnosis &amp; Heatmaps
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'chest_metrics' %}#metrics-table">
+                <i class="bi bi-table" style="color:#3b82f6;"></i> Performance Metrics
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'chest_metrics' %}#graphs-section">
+                <i class="bi bi-bar-chart-line-fill" style="color:#3b82f6;"></i> Graphical Analysis
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+
+      <!-- ── BRAIN MRI (Green) ── -->
+      <li>
+        <a class="sb-link sb-brain {% if request.resolver_match.url_name == 'mri_stroke' or request.resolver_match.url_name == 'brain_metrics' %}active-parent{% endif %}"
+           data-bs-toggle="collapse" href="#brainCollapse" role="button">
+          <i class="bi bi-diagram-3-fill icon-color"></i>
+          <span>Brain MRI</span>
+          <i class="bi bi-chevron-down sb-chevron"></i>
+        </a>
+        <div class="collapse {% if request.resolver_match.url_name == 'mri_stroke' or request.resolver_match.url_name == 'brain_metrics' %}show{% endif %}" id="brainCollapse">
+          <ul class="sb-sub">
+            <li>
+              <a href="{% url 'mri_stroke' %}" class="{% if request.resolver_match.url_name == 'mri_stroke' %}active{% endif %}">
+                <i class="bi bi-activity" style="color:#22c55e;"></i> Diagnosis &amp; Heatmaps
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'brain_metrics' %}#metrics-table">
+                <i class="bi bi-table" style="color:#22c55e;"></i> Performance Metrics
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'brain_metrics' %}#graphs-section">
+                <i class="bi bi-bar-chart-line-fill" style="color:#22c55e;"></i> Graphical Analysis
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+
+      <!-- ── MAMMOGRAPHY (Red) ── -->
+      <li>
+        <a class="sb-link sb-mammo {% if request.resolver_match.url_name == 'mammography' or request.resolver_match.url_name == 'mammography_metrics' %}active-parent{% endif %}"
+           data-bs-toggle="collapse" href="#mammoCollapse" role="button">
+          <i class="bi bi-gender-female icon-color"></i>
+          <span>Mammography</span>
+          <i class="bi bi-chevron-down sb-chevron"></i>
+        </a>
+        <div class="collapse {% if request.resolver_match.url_name == 'mammography' or request.resolver_match.url_name == 'mammography_metrics' %}show{% endif %}" id="mammoCollapse">
+          <ul class="sb-sub">
+            <li>
+              <a href="{% url 'mammography' %}" class="{% if request.resolver_match.url_name == 'mammography' %}active{% endif %}">
+                <i class="bi bi-activity" style="color:#ef4444;"></i> Diagnosis &amp; Heatmaps
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'mammography_metrics' %}#metrics-table">
+                <i class="bi bi-table" style="color:#ef4444;"></i> Performance Metrics
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'mammography_metrics' %}#graphs-section">
+                <i class="bi bi-bar-chart-line-fill" style="color:#ef4444;"></i> Graphical Analysis
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+
+      <!-- SYSTEM -->
+      <li><span class="sb-label" style="margin-top: 12px;">System</span></li>
+      <li>
+        <a href="{% url 'index' %}" class="sb-link sb-logout">
+          <i class="bi bi-box-arrow-left" style="color:#f87171;"></i>
+          <span>Logout</span>
+        </a>
+      </li>
+
+    </ul>
+  </aside>
+
+  <!-- ══════ TOP HEADER ══════ -->
+  <header id="topbar">
+    <i class="bi bi-heart-pulse" style="font-size:22px; color:#38bdf8;"></i>
+    <span class="topbar-title">AI Medical <span>Diagnostics</span></span>
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <span style="font-size:12px; color:#64748b; font-weight:500; letter-spacing:0.5px;">
+        <i class="bi bi-circle-fill" style="font-size:7px; color:#22c55e; margin-right:5px;"></i>
+        System Online
+      </span>
+    </div>
+  </header>
+
+  <!-- ══════ MAIN CONTENT ══════ -->
+  <main id="main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Bootstrap JS -->
+  <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script>
+    // Smooth collapse chevron animation
+    document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(btn => {
+      const target = btn.getAttribute('href') || btn.dataset.bsTarget;
+      const el = document.querySelector(target);
+      if (!el) return;
+      el.addEventListener('show.bs.collapse', () => btn.classList.remove('collapsed'));
+      el.addEventListener('hide.bs.collapse', () => btn.classList.add('collapsed'));
+    });
+
+    // Smooth scroll from hash in sidebar links
+    document.querySelectorAll('.sb-sub a[href*="#"]').forEach(a => {
+      a.addEventListener('click', function(e) {
+        const hash = this.getAttribute('href').split('#')[1];
+        if (hash && window.location.pathname === this.pathname) {
+          e.preventDefault();
+          const el = document.getElementById(hash);
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

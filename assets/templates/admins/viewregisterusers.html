@@ -1,0 +1,156 @@
+{% extends 'admins/adminbase.html' %}
+{% block title %}User List{% endblock %}
+{% block user_list %}active{% endblock %}
+{% block content %}
+<style>
+    .user-list-container {
+        background: linear-gradient(135deg, #F5F7FA 0%, white 100%);
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(14, 91, 168, 0.12);
+        padding: 40px;
+        margin: 40px 0;
+    }
+
+    .card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(14, 91, 168, 0.1);
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #0E5BA8 0%, #1E7BC1 100%);
+        color: white;
+        padding: 20px;
+        border: none;
+    }
+
+    .card-header h1 {
+        color: white;
+        margin: 0;
+        font-size: 28px;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .table thead {
+        background: linear-gradient(135deg, #0E5BA8 0%, #1E7BC1 100%);
+        color: white;
+    }
+
+    .table thead th {
+        padding: 15px;
+        text-align: left;
+        font-weight: 600;
+        border: none;
+    }
+
+    .table tbody tr {
+        border-bottom: 1px solid #E8EEF7;
+        transition: all 0.3s ease;
+    }
+
+    .table tbody tr:hover {
+        background-color: rgba(14, 91, 168, 0.05);
+    }
+
+    .table tbody td {
+        padding: 12px 15px;
+        color: #2C3E50;
+    }
+
+    .btn-link {
+        color: #0E5BA8;
+        text-decoration: none;
+        font-weight: 600;
+        padding: 8px 12px;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+
+    .btn-link:hover {
+        background-color: rgba(14, 91, 168, 0.1);
+        color: #1E7BC1;
+    }
+
+    .status-active {
+        background-color: rgba(40, 167, 69, 0.2);
+        color: #155724;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-weight: 600;
+    }
+
+    .status-waiting {
+        background-color: rgba(255, 193, 7, 0.2);
+        color: #856404;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-weight: 600;
+    }
+</style>
+
+<div class="container">
+    <div class="user-list-container">
+        <div class="card">
+            <div class="card-header">
+                <h1><i class="bi bi-people"></i> User List</h1>
+            </div>
+            <div class="card-body">
+                <div style="overflow-x: auto;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">S.NO</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Login ID</th>
+                                <th scope="col">Mobile</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Locality</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in data %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ user.name }}</td>
+                                <td>{{ user.loginid }}</td>
+                                <td>{{ user.mobile }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>{{ user.locality }}</td>
+                                <td>
+                                    {% if user.status == 'waiting' %}
+                                    <span class="status-waiting">Waiting</span>
+                                    {% else %}
+                                    <span class="status-active">Activated</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if user.status == 'waiting' %}
+                                    <a class="btn-link" href="/ActivaUsers/?uid={{ user.id }}">
+                                        <i class="bi bi-check-circle"></i> Activate
+                                    </a>
+                                    {% else %}
+                                    <span style="color: #6C757D; font-size: 14px;">Active</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

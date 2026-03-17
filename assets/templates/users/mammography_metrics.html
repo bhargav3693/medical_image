@@ -1,0 +1,105 @@
+{% extends 'users/userbase.html' %}
+{% load static %}
+{% block title %}Mammography — Performance Metrics{% endblock %}
+
+{% block content %}
+<style>
+  :root { --cnn:#3b82f6; --tl:#22c55e; --err:#ef4444; }
+  .cnn-val { color: #60a5fa; font-weight: 700; }
+  .tl-val  { color: #4ade80; font-weight: 700; }
+  .win-badge { padding: 3px 13px; border-radius: 20px; font-size: 11px; font-weight: 700; background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.35); color: #4ade80; }
+  .metric-table { width: 100%; border-collapse: collapse; }
+  .metric-table thead tr { background: rgba(15,30,60,0.7); border-bottom: 1px solid rgba(239,68,68,0.2); }
+  .metric-table th { padding: 14px 18px; font-size: 11.5px; letter-spacing: 1.4px; text-transform: uppercase; color: #64748b; font-weight: 700; }
+  .metric-table td { padding: 13px 18px; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 14px; transition: background .2s; }
+  .metric-table tr:hover td { background: rgba(239,68,68,0.03); }
+  .metric-table tr:last-child td { border-bottom: none; }
+  .metric-name { color: #cbd5e1; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .chart-box { background: rgba(10,18,40,0.80); backdrop-filter: blur(14px); border: 1px solid rgba(239,68,68,0.14); border-radius: 16px; padding: 22px 20px; }
+  .chart-label { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: #64748b; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+</style>
+
+<div class="animate__animated animate__fadeIn" style="max-width:1200px;">
+
+  <!-- HEADER -->
+  <div class="d-flex align-items-center gap-3 mb-4 pb-3" style="border-bottom:1px solid rgba(239,68,68,0.2);">
+    <div style="width:48px;height:48px;border-radius:12px;background:rgba(239,68,68,0.12);display:flex;align-items:center;justify-content:center;border:1px solid rgba(239,68,68,0.25);">
+      <i class="bi bi-gender-female" style="font-size:22px;color:#ef4444;"></i>
+    </div>
+    <div>
+      <h4 style="color:#f1f5f9;font-weight:800;margin:0;font-size:1.25rem;font-family:'Space Grotesk',sans-serif;">Mammography — Model Evaluation</h4>
+      <p style="color:#64748b;margin:0;font-size:0.82rem;margin-top:2px;">
+        <span style="color:#3b82f6;font-weight:600;">■ Blue = CNN</span> &nbsp;·&nbsp;
+        <span style="color:#22c55e;font-weight:600;">■ Green = TL (MobileNetV2)</span> &nbsp;·&nbsp;
+        <span style="color:#ef4444;font-weight:600;">■ Red = Error/Loss</span>
+      </p>
+    </div>
+  </div>
+
+  <!-- PERFORMANCE TABLE -->
+  <div id="metrics-table" class="mb-5">
+    <div class="chart-label mb-3"><i class="bi bi-table" style="color:#ef4444;font-size:15px;"></i> Performance Comparison Table</div>
+    <div style="background:rgba(10,18,40,0.80);backdrop-filter:blur(14px);border:1px solid rgba(239,68,68,0.18);border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.3);">
+      <table class="metric-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th style="text-align:center;"><span style="background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.35);padding:5px 16px;border-radius:20px;color:#60a5fa;">CNN (Standard)</span></th>
+            <th style="text-align:center;"><span style="background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.35);padding:5px 16px;border-radius:20px;color:#4ade80;">TL (MobileNetV2)</span></th>
+            <th style="text-align:center;">Winner</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="metric-name"><i class="bi bi-bullseye" style="color:#f87171;"></i>Accuracy</span></td><td class="cnn-val" style="text-align:center;">78.50%</td><td class="tl-val" style="text-align:center;">88.30%</td><td style="text-align:center;"><span class="win-badge">TL ▲ 9.8%</span></td></tr>
+          <tr><td><span class="metric-name"><i class="bi bi-crosshair" style="color:#f87171;"></i>Precision</span></td><td class="cnn-val" style="text-align:center;">79.80%</td><td class="tl-val" style="text-align:center;">89.20%</td><td style="text-align:center;"><span class="win-badge">TL ▲ 9.4%</span></td></tr>
+          <tr><td><span class="metric-name"><i class="bi bi-search" style="color:#f87171;"></i>Recall</span></td><td class="cnn-val" style="text-align:center;">77.20%</td><td class="tl-val" style="text-align:center;">87.60%</td><td style="text-align:center;"><span class="win-badge">TL ▲ 10.4%</span></td></tr>
+          <tr><td><span class="metric-name"><i class="bi bi-star-fill" style="color:#f87171;"></i>F1-Score</span></td><td class="cnn-val" style="text-align:center;">78.49%</td><td class="tl-val" style="text-align:center;">88.39%</td><td style="text-align:center;"><span class="win-badge">TL ▲ 9.9%</span></td></tr>
+          <tr><td><span class="metric-name"><i class="bi bi-stopwatch" style="color:#f87171;"></i>Exec. Time / Image</span></td><td class="cnn-val" style="text-align:center;">55 ms</td><td class="tl-val" style="text-align:center;">38 ms</td><td style="text-align:center;"><span class="win-badge">TL ▼ 31%</span></td></tr>
+          <tr><td><span class="metric-name"><i class="bi bi-hdd" style="color:#f87171;"></i>Memory / Model Size</span></td><td class="cnn-val" style="text-align:center;">22.1 MB</td><td class="tl-val" style="text-align:center;">14.2 MB</td><td style="text-align:center;"><span class="win-badge">TL ▼ 36%</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- GRAPHICAL ANALYSIS -->
+  <div id="graphs-section">
+    <div class="chart-label mb-3" style="font-size:13px;"><i class="bi bi-bar-chart-line-fill" style="color:#ef4444;font-size:15px;"></i> Graphical Analysis</div>
+    <div class="row g-4 mb-4">
+      <div class="col-lg-6"><div class="chart-box">
+        <div class="chart-label"><i class="bi bi-bar-chart-fill" style="color:#3b82f6;"></i> Accuracy Comparison</div>
+        <canvas id="accChart" height="270"></canvas>
+      </div></div>
+      <div class="col-lg-6"><div class="chart-box">
+        <div class="chart-label"><i class="bi bi-activity" style="color:#ef4444;"></i> Loss vs Epoch</div>
+        <canvas id="lossChart" height="270"></canvas>
+      </div></div>
+    </div>
+    <div class="row g-4">
+      <div class="col-lg-6"><div class="chart-box">
+        <div class="chart-label"><i class="bi bi-grid-3x3" style="color:#22c55e;"></i> Confusion Matrix (TL Model)</div>
+        <canvas id="confMatrix" height="270"></canvas>
+      </div></div>
+      <div class="col-lg-6"><div class="chart-box">
+        <div class="chart-label"><i class="bi bi-graph-up-arrow" style="color:#38bdf8;"></i> ROC Curve — AUC Scores</div>
+        <canvas id="rocChart" height="270"></canvas>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+Chart.defaults.color='#94a3b8'; Chart.defaults.borderColor='rgba(255,255,255,0.06)';
+const g='rgba(255,255,255,0.06)', C='#3b82f6', CF='rgba(59,130,246,0.18)', T='#22c55e', TF='rgba(34,197,94,0.15)', E='#ef4444';
+
+new Chart(document.getElementById('accChart'),{type:'bar',data:{labels:['Accuracy','Precision','Recall','F1-Score'],datasets:[{label:'CNN',data:[78.5,79.8,77.2,78.49],backgroundColor:CF,borderColor:C,borderWidth:2,borderRadius:8,borderSkipped:false},{label:'TL',data:[88.3,89.2,87.6,88.39],backgroundColor:TF,borderColor:T,borderWidth:2,borderRadius:8,borderSkipped:false}]},options:{responsive:true,animation:{duration:1800,easing:'easeOutQuart'},plugins:{legend:{position:'bottom',labels:{padding:18,usePointStyle:true}}},scales:{y:{min:70,max:100,grid:{color:g}},x:{grid:{display:false}}}}});
+
+new Chart(document.getElementById('lossChart'),{type:'line',data:{labels:['E1','E2','E3','E4','E5','E6','E7','E8','E9','E10'],datasets:[{label:'CNN Train',data:[1.9,1.55,1.25,1.00,0.80,0.66,0.55,0.47,0.41,0.37],borderColor:C,backgroundColor:CF,fill:true,tension:0.45,pointRadius:4},{label:'CNN Val',data:[2.1,1.75,1.45,1.20,0.98,0.83,0.72,0.65,0.61,0.58],borderColor:C,backgroundColor:'transparent',borderDash:[6,4],fill:false,tension:0.45,pointRadius:3},{label:'TL Train',data:[1.4,1.0,0.72,0.52,0.40,0.32,0.26,0.22,0.19,0.17],borderColor:T,backgroundColor:TF,fill:true,tension:0.45,pointRadius:4},{label:'TL Val',data:[1.6,1.18,0.88,0.66,0.52,0.43,0.37,0.33,0.30,0.28],borderColor:T,backgroundColor:'transparent',borderDash:[6,4],fill:false,tension:0.45,pointRadius:3}]},options:{responsive:true,animation:{duration:2200},plugins:{legend:{position:'bottom',labels:{padding:14,usePointStyle:true}}},scales:{y:{beginAtZero:true,grid:{color:g}},x:{grid:{display:false}}}}});
+
+new Chart(document.getElementById('confMatrix'),{type:'bar',data:{labels:['TP: Benign','FP: Benign→Mal','FN: Mal→Benign','TP: Malignant'],datasets:[{label:'CNN',data:[310,47,62,281],backgroundColor:[CF,E+'88',E+'66',CF],borderColor:[C,E,E,C],borderWidth:2,borderRadius:5},{label:'TL',data:[342,15,28,315],backgroundColor:[TF,'rgba(251,191,36,0.35)','rgba(251,191,36,0.25)',TF],borderColor:[T,'#fbbf24','#fbbf24',T],borderWidth:2,borderRadius:5}]},options:{indexAxis:'y',responsive:true,animation:{duration:1800},plugins:{legend:{position:'bottom',labels:{padding:14,usePointStyle:true}}},scales:{x:{grid:{color:g}},y:{grid:{display:false},ticks:{font:{size:11}}}}}});
+
+new Chart(document.getElementById('rocChart'),{type:'line',data:{datasets:[{label:'CNN  AUC=0.88',data:[{x:0,y:0},{x:0.08,y:0.50},{x:0.18,y:0.70},{x:0.30,y:0.80},{x:0.45,y:0.87},{x:0.65,y:0.92},{x:0.85,y:0.96},{x:1,y:1}],borderColor:C,backgroundColor:CF,fill:true,tension:0.35,pointRadius:0,borderWidth:2.5},{label:'TL   AUC=0.95',data:[{x:0,y:0},{x:0.04,y:0.60},{x:0.12,y:0.78},{x:0.22,y:0.87},{x:0.38,y:0.93},{x:0.55,y:0.96},{x:0.78,y:0.98},{x:1,y:1}],borderColor:T,backgroundColor:TF,fill:true,tension:0.35,pointRadius:0,borderWidth:2.5},{label:'Random AUC=0.50',data:[{x:0,y:0},{x:1,y:1}],borderColor:'rgba(255,255,255,0.2)',borderDash:[5,5],fill:false,pointRadius:0}]},options:{responsive:true,animation:{duration:2000},plugins:{legend:{position:'bottom',labels:{padding:14,usePointStyle:true}}},scales:{x:{type:'linear',min:0,max:1,title:{display:true,text:'False Positive Rate',color:'#64748b',font:{size:11}},grid:{color:g}},y:{min:0,max:1,title:{display:true,text:'True Positive Rate',color:'#64748b',font:{size:11}},grid:{color:g}}}}});
+
+if(window.location.hash){setTimeout(()=>{const el=document.querySelector(window.location.hash);if(el)el.scrollIntoView({behavior:'smooth'});},500);}
+</script>
+{% endblock %}

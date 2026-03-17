@@ -1,0 +1,65 @@
+{%extends 'users/userbase.html'%}
+{%block contents%}
+<style>
+    .data-container {
+        background: linear-gradient(135deg, #F5F7FA 0%, white 100%);
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(14, 91, 168, 0.12);
+        padding: 40px;
+        margin: 40px 0;
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .section-title {
+        color: #0E5BA8;
+        font-size: 28px;
+        font-weight: 700;
+        border-bottom: 3px solid #17a2b8;
+        display: inline-block;
+        padding-bottom: 10px;
+    }
+
+    .data-box {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        border-left: 4px solid #0E5BA8;
+        overflow-x: auto;
+    }
+
+    pre {
+        font-family: 'Courier New', monospace;
+        color: #2C3E50;
+        background: #F5F7FA;
+        padding: 15px;
+        border-radius: 6px;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+</style>
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.css">
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script>
+<script type="text/javascript">(document).ready(function(){('table').DataTable({
+    "pageLength": 50
+});});
+</script>
+
+<div class="container">
+    <div class="data-container">
+        <div class="section-header">
+            <h2 class="section-title"><i class="bi bi-table"></i> Dataset View</h2>
+        </div>
+
+        <div class="data-box">
+            <pre>{{data|safe}}{{auto|safe}}</pre>
+        </div>
+    </div>
+</div>
+
+{%endblock%}
