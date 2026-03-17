@@ -110,8 +110,8 @@ def start_process(imagepath):
 
     img_path = os.path.join(settings.MEDIA_ROOT, imagepath)
 
-    model_path = os.path.join(settings.MEDIA_ROOT, 'ChestModel.h5')
-    tl_model_path = os.path.join(settings.BASE_DIR, 'training_results', 'chest', 'chest_tl_model.h5')
+    model_path = os.path.join(settings.BASE_DIR, 'models', 'ChestModel.h5')
+    tl_model_path = os.path.join(settings.BASE_DIR, 'models', 'chest_tl_model.h5')
 
     model = load_model(model_path, compile=False, safe_mode=False)
     try:

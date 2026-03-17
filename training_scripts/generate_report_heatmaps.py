@@ -68,7 +68,7 @@ if __name__ == "__main__":
     # Brain
     if os.path.exists(brain_img):
         try:
-            brain_model = load_model(os.path.join(base_dir, 'training_results', 'brain', 'brain_tl_model.h5'))
+            brain_model = load_model(os.path.join(base_dir, 'models', 'brain_tl_model.h5'))
             img_arr = get_img_array(brain_img, size=(224, 224))
             # MobileNetV2 typically has an output layer 'out_relu'
             # Let's find the last conv layer in MobileNetV2
@@ -82,7 +82,7 @@ if __name__ == "__main__":
     # Mammography
     if os.path.exists(mammo_img):
         try:
-            mammo_model = load_model(os.path.join(base_dir, 'training_results', 'mammography', 'mammography_tl_model.h5'))
+            mammo_model = load_model(os.path.join(base_dir, 'models', 'mammography_tl_model.h5'))
             img_arr = get_img_array(mammo_img, size=(224, 224))
             last_conv_layer = "out_relu"
             hm = make_gradcam_heatmap(img_arr, mammo_model, last_conv_layer)
@@ -94,7 +94,7 @@ if __name__ == "__main__":
     # Chest
     if os.path.exists(chest_img):
         try:
-            chest_model = load_model(os.path.join(base_dir, 'training_results', 'chest', 'chest_tl_model.h5'))
+            chest_model = load_model(os.path.join(base_dir, 'models', 'chest_tl_model.h5'))
             img_arr = get_img_array(chest_img, size=(224, 224))
             last_conv_layer = "out_relu"
             hm = make_gradcam_heatmap(img_arr, chest_model, last_conv_layer)

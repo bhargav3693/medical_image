@@ -65,8 +65,8 @@ def generate_heatmap_with_bbox(image_path, prefix="mammo"):
 def start_process(imagepath):
 
     img_path = os.path.join(settings.MEDIA_ROOT, imagepath)
-    model_path = os.path.join(settings.MEDIA_ROOT, "mammography_model3.h5")
-    tl_model_path = os.path.join(settings.BASE_DIR, 'training_results', 'mammography', 'mammography_tl_model.h5')
+    model_path = os.path.join(settings.BASE_DIR, 'models', "mammography_model3.h5")
+    tl_model_path = os.path.join(settings.BASE_DIR, 'models', 'mammography_tl_model.h5')
 
     model = load_model(model_path, compile=False)
     try:

@@ -12,8 +12,8 @@ from django.conf import settings
 def start_process(imagepath):
 
     img_path = os.path.join(settings.MEDIA_ROOT, imagepath)
-    model_path = os.path.join(settings.MEDIA_ROOT, 'brain_tumor_detector.h5')
-    tl_model_path = os.path.join(settings.BASE_DIR, 'training_results', 'brain', 'brain_tl_model.h5')
+    model_path = os.path.join(settings.BASE_DIR, 'models', 'brain_tumor_detector.h5')
+    tl_model_path = os.path.join(settings.BASE_DIR, 'models', 'brain_tl_model.h5')
 
     model = load_model(model_path, compile=False)
     try:

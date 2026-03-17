@@ -90,7 +90,7 @@ model.compile(optimizer=Adam(learning_rate=1e-3),
 model.summary()
 
 # ── Callbacks ─────────────────────────────────────────────────────────
-ckpt_path = os.path.join(SAVE_DIR, 'brain_tl_best.h5')
+ckpt_path = os.path.join(BASE_DIR, 'models', 'brain_tl_best.h5')
 callbacks_phase1 = [
     ModelCheckpoint(ckpt_path, monitor='val_accuracy', save_best_only=True, verbose=1),
     EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True, verbose=1),
@@ -134,7 +134,7 @@ history2 = model.fit(
 )
 
 # ── Save Final Model ──────────────────────────────────────────────────
-final_path = os.path.join(SAVE_DIR, 'brain_tl_model.h5')
+final_path = os.path.join(BASE_DIR, 'models', 'brain_tl_model.h5')
 model.save(final_path)
 print(f"\nModel saved: {final_path}")
 

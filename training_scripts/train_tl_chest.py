@@ -114,7 +114,7 @@ model.compile(optimizer=Adam(learning_rate=1e-3),
 model.summary()
 
 # ── Callbacks ─────────────────────────────────────────────────────────
-ckpt_path = os.path.join(SAVE_DIR, 'chest_tl_best.h5')
+ckpt_path = os.path.join(BASE_DIR, 'models', 'chest_tl_best.h5')
 cb_p1 = [
     ModelCheckpoint(ckpt_path, monitor='val_accuracy', save_best_only=True, verbose=1),
     EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True, verbose=1),
@@ -158,7 +158,7 @@ history2 = model.fit(
 )
 
 # ── Save ──────────────────────────────────────────────────────────────
-final_path = os.path.join(SAVE_DIR, 'chest_tl_model.h5')
+final_path = os.path.join(BASE_DIR, 'models', 'chest_tl_model.h5')
 model.save(final_path)
 print(f"\nModel saved: {final_path}")
 
