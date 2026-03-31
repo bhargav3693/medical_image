@@ -1,7 +1,7 @@
 import google.generativeai as genai
 
 # Initialize with my Google Gemini Key
-genai.configure(api_key="AIzaSyAQskwVEBpJOVpfno4PRnzKACGSodInog4")
+genai.configure(api_key="AIzaSyDIhh7z94PkkV_s_VXftiW7qPHNFahVDIM")
 
 def get_clinical_advice(disease_name, dataset_type):
     try:

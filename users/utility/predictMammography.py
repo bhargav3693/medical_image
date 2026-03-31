@@ -96,8 +96,11 @@ def start_process(imagepath):
         """
         crop_img_0_255: a 512x512x3 float32 image in 0–255 range
         """
+        target_size = (model.input_shape[1], model.input_shape[2])
+        crop_resized_cnn = cv2.resize(crop_img_0_255, target_size)
+        
         # --- CNN: normalise to 0-1 as trained ---
-        cnn_in = np.expand_dims(crop_img_0_255 / 255.0, axis=0)
+        cnn_in = np.expand_dims(crop_resized_cnn / 255.0, axis=0)
         cnn_out = model.predict(cnn_in, verbose=0)
         cnn_probs = softmaxToProbs(cnn_out)
         cnn_idx = int(np.argmax(cnn_probs))

@@ -218,6 +218,23 @@
     --tl-color:  #22c55e;
     --warn-color: #ef4444;
   }
+
+  /* Mobile Sidebar Toggle */
+  @media (max-width: 768px) {
+    .sidebar {
+      transform: translateX(-100%);
+    }
+    .sidebar.show {
+      transform: translateX(0);
+    }
+    #topbar {
+      left: 0;
+      width: 100%;
+    }
+    #main {
+      margin-left: 0;
+    }
+  }
 </style>
 
 <body>
@@ -347,7 +364,10 @@
 
   <!-- ══════ TOP HEADER ══════ -->
   <header id="topbar">
-    <i class="bi bi-heart-pulse" style="font-size:22px; color:#38bdf8;"></i>
+    <button id="mobile-toggle" class="d-md-none" style="background:none; border:none; color:#f1f5f9; font-size:26px; padding:0; margin-right:8px;">
+      <i class="bi bi-list"></i>
+    </button>
+    <i class="bi bi-heart-pulse d-none d-md-block" style="font-size:22px; color:#38bdf8;"></i>
     <span class="topbar-title">AI Medical <span>Diagnostics</span></span>
     <div class="ms-auto d-flex align-items-center gap-3">
       <span style="font-size:12px; color:#64748b; font-weight:500; letter-spacing:0.5px;">
@@ -365,6 +385,17 @@
   <!-- Bootstrap JS -->
   <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
   <script>
+    // Mobile Sidebar Toggle
+    document.addEventListener('DOMContentLoaded', () => {
+      const mobileToggle = document.getElementById('mobile-toggle');
+      const sidebar = document.querySelector('.sidebar');
+      if (mobileToggle) {
+        mobileToggle.addEventListener('click', () => {
+          sidebar.classList.toggle('show');
+        });
+      }
+    });
+
     // Smooth collapse chevron animation
     document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(btn => {
       const target = btn.getAttribute('href') || btn.dataset.bsTarget;
