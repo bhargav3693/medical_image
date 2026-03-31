@@ -7,6 +7,9 @@ import imutils
 from tf_keras.models import load_model
 from tensorflow.keras.applications.mobilenet_v2 import preprocess_input as mobilenet_preprocess
 from django.conf import settings
+import tensorflow as tf
+tf.config.threading.set_inter_op_parallelism_threads(1)
+tf.config.threading.set_intra_op_parallelism_threads(1)
 
 
 def start_process(imagepath):
@@ -69,6 +72,13 @@ def start_process(imagepath):
 
     # --- Generate Heatmap with Bounding Box for Brain MRI ---
     heatmap_name = _generate_brain_heatmap(img_path, extLeft, extRight, extTop, extBot)
+
+    # MAGIC FIX: Clear massive memory graph to stop OOM / SIGKILL!
+    import gc
+    tf.keras.backend.clear_session()
+    del model
+    if tl_model: del tl_model
+    gc.collect()
 
     return res, res_tl, heatmap_name
 

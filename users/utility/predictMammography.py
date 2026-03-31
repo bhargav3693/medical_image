@@ -9,6 +9,9 @@ from django.conf import settings
 from tf_keras.utils import load_img
 from tf_keras.models import load_model
 from tensorflow.keras.applications.mobilenet_v2 import preprocess_input as mobilenet_preprocess
+import tensorflow as tf
+tf.config.threading.set_inter_op_parallelism_threads(1)
+tf.config.threading.set_intra_op_parallelism_threads(1)
 
 
 def generate_heatmap_with_bbox(image_path, prefix="mammo"):
@@ -156,6 +159,13 @@ def start_process(imagepath):
         # --- AI Clinical Suggestion ---
         dominant = prediction_tl if tl_confidence > cnn_confidence else prediction
         dynamic_suggestion = get_clinical_advice(dominant, 'mammography')
+
+        # MAGIC FIX: Clear massive memory graph to stop OOM / SIGKILL!
+        import gc
+        tf.keras.backend.clear_session()
+        del model
+        if tl_model: del tl_model
+        gc.collect()
 
         return prediction, prediction_tl, cnn_confidence, tl_confidence, heatmap_name, dynamic_suggestion
 

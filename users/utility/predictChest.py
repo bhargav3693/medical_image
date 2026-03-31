@@ -11,6 +11,9 @@ from tf_keras.utils import load_img
 from tf_keras.models import load_model
 from tensorflow.keras.applications.mobilenet_v2 import preprocess_input as mobilenet_preprocess
 from django.conf import settings
+import tensorflow as tf
+tf.config.threading.set_inter_op_parallelism_threads(1)
+tf.config.threading.set_intra_op_parallelism_threads(1)
 
 labels = [
     'Atelectasis', 'Cardiomegaly', 'Consolidation', 'Edema', 'Effusion',
@@ -19,14 +22,10 @@ labels = [
 ]
 
 
-def get_mean_std_per_batchR(image_path, df, H=320, W=320):
-    sample_data = []
-    for idx, img in enumerate(df.sample(100)["id"].values):
-        sample_data.append(np.array(load_img(image_path, target_size=(H, W))))
-    sample_data = np.array(sample_data)
-    mean = np.mean(sample_data)
-    std = np.std(sample_data)
-    return mean, std
+def get_mean_std_per_batchR(image_path, df=None, H=320, W=320):
+    # MAGIC FIX: Directly read the single image instead of 100 to stop server timeouts!
+    single_img = np.array(load_img(image_path, target_size=(H, W)))
+    return np.mean(single_img), np.std(single_img)
 
 
 def load_imageR(img_path, df, preprocess=True, H=320, W=320):
@@ -175,5 +174,12 @@ def start_process(imagepath):
     # --- AI Clinical Suggestion ---
     dominant = prediction_tl if tl_confidence > cnn_confidence else prediction
     dynamic_suggestion = get_clinical_advice(dominant, 'chest X-Ray')
+
+    # MAGIC FIX: Clear massive memory graph to stop OOM / SIGKILL!
+    import gc
+    tf.keras.backend.clear_session()
+    del model
+    if tl_model: del tl_model
+    gc.collect()
 
     return prediction, prediction_tl, cnn_confidence, tl_confidence, heatmap_name, dynamic_suggestion
