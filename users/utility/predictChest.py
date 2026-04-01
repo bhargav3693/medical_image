@@ -23,7 +23,7 @@ def get_mean_std_per_batchR(image_path, df=None, H=320, W=320):
     return np.mean(single_img), np.std(single_img)
 
 
-def load_imageR(img_path, df, preprocess=True, H=320, W=320):
+def load_imageR(img_path, df=None, preprocess=True, H=320, W=320):
     from tf_keras.utils import load_img
     mean, std = get_mean_std_per_batchR(img_path, df, H=H, W=W)
     x = load_img(img_path, target_size=(H, W))
@@ -121,11 +121,8 @@ def start_process(imagepath):
         print(f"[WARN] Could not load TL model: {e}")
         tl_model = None
 
-    df_path = os.path.join(settings.MEDIA_ROOT, 'nih', 'train-small.csv')
-    df = pd.read_csv(df_path)
-
     # --- CNN Inference ---
-    preprocessed_input = load_imageR(img_path, df)
+    preprocessed_input = load_imageR(img_path, None)
     predictions = model.predict(preprocessed_input, verbose=0)
     prediction_index = int(np.argmax(predictions))
     prediction = labels[prediction_index]
