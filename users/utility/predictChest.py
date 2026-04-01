@@ -7,13 +7,7 @@ import numpy as np
 import pandas as pd
 import cv2
 
-from tf_keras.utils import load_img
-from tf_keras.models import load_model
-from tensorflow.keras.applications.mobilenet_v2 import preprocess_input as mobilenet_preprocess
 from django.conf import settings
-import tensorflow as tf
-tf.config.threading.set_inter_op_parallelism_threads(1)
-tf.config.threading.set_intra_op_parallelism_threads(1)
 
 labels = [
     'Atelectasis', 'Cardiomegaly', 'Consolidation', 'Edema', 'Effusion',
@@ -23,12 +17,14 @@ labels = [
 
 
 def get_mean_std_per_batchR(image_path, df=None, H=320, W=320):
+    from tf_keras.utils import load_img
     # MAGIC FIX: Directly read the single image instead of 100 to stop server timeouts!
     single_img = np.array(load_img(image_path, target_size=(H, W)))
     return np.mean(single_img), np.std(single_img)
 
 
 def load_imageR(img_path, df, preprocess=True, H=320, W=320):
+    from tf_keras.utils import load_img
     mean, std = get_mean_std_per_batchR(img_path, df, H=H, W=W)
     x = load_img(img_path, target_size=(H, W))
     x = np.array(x).astype("float32")
@@ -106,6 +102,12 @@ def generate_heatmap_with_bbox(image_path):
 
 
 def start_process(imagepath):
+    from tf_keras.utils import load_img
+    from tf_keras.models import load_model
+    from tensorflow.keras.applications.mobilenet_v2 import preprocess_input as mobilenet_preprocess
+    import tensorflow as tf
+    tf.config.threading.set_inter_op_parallelism_threads(1)
+    tf.config.threading.set_intra_op_parallelism_threads(1)
 
     img_path = os.path.join(settings.MEDIA_ROOT, imagepath)
 

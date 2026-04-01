@@ -3,6 +3,12 @@
 import os
 import sys
 
+# Optimize TensorFlow memory usage & load times for Render
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+os.environ['TF_USE_LEGACY_KERAS'] = '1'
+
 
 def main():
     """Run administrative tasks."""

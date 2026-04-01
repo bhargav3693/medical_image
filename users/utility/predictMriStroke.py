@@ -4,15 +4,15 @@ os.environ['TF_USE_LEGACY_KERAS'] = '1'
 import cv2
 import numpy as np
 import imutils
-from tf_keras.models import load_model
-from tensorflow.keras.applications.mobilenet_v2 import preprocess_input as mobilenet_preprocess
 from django.conf import settings
-import tensorflow as tf
-tf.config.threading.set_inter_op_parallelism_threads(1)
-tf.config.threading.set_intra_op_parallelism_threads(1)
 
 
 def start_process(imagepath):
+    from tf_keras.models import load_model
+    from tensorflow.keras.applications.mobilenet_v2 import preprocess_input as mobilenet_preprocess
+    import tensorflow as tf
+    tf.config.threading.set_inter_op_parallelism_threads(1)
+    tf.config.threading.set_intra_op_parallelism_threads(1)
 
     img_path = os.path.join(settings.MEDIA_ROOT, imagepath)
     model_path = os.path.join(settings.BASE_DIR, 'models', 'brain_tumor_detector.h5')

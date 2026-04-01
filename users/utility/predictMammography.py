@@ -6,12 +6,6 @@ from users.utility.generative_ai import get_clinical_advice
 import cv2
 import numpy as np
 from django.conf import settings
-from tf_keras.utils import load_img
-from tf_keras.models import load_model
-from tensorflow.keras.applications.mobilenet_v2 import preprocess_input as mobilenet_preprocess
-import tensorflow as tf
-tf.config.threading.set_inter_op_parallelism_threads(1)
-tf.config.threading.set_intra_op_parallelism_threads(1)
 
 
 def generate_heatmap_with_bbox(image_path, prefix="mammo"):
@@ -66,6 +60,11 @@ def generate_heatmap_with_bbox(image_path, prefix="mammo"):
 
 
 def start_process(imagepath):
+    from tf_keras.models import load_model
+    from tensorflow.keras.applications.mobilenet_v2 import preprocess_input as mobilenet_preprocess
+    import tensorflow as tf
+    tf.config.threading.set_inter_op_parallelism_threads(1)
+    tf.config.threading.set_intra_op_parallelism_threads(1)
 
     img_path = os.path.join(settings.MEDIA_ROOT, imagepath)
     model_path = os.path.join(settings.BASE_DIR, 'models', "mammography_model3.h5")
