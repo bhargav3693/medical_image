@@ -21,7 +21,6 @@ def generate_heatmap_with_bbox(image_path, prefix="mammo"):
     blurred = cv2.GaussianBlur(gray, (31, 31), 0)
 
     # Invert for dark-background mammography images (tissue appears bright)
-    # Keep if tissue is bright
     if np.mean(gray) < 100:
         blurred = cv2.bitwise_not(blurred)
 
@@ -43,7 +42,6 @@ def generate_heatmap_with_bbox(image_path, prefix="mammo"):
         by = max(0, by - pad_y)
         bw = min(w - bx, bw + 2 * pad_x)
         bh = min(h - by, bh + 2 * pad_y)
-        # Bounding box in magenta/red for mammography
         cv2.rectangle(overlay, (bx, by), (bx + bw, by + bh), (80, 0, 230), 3)
         cl = 22
         for px, py, dx, dy in [
@@ -63,6 +61,8 @@ def start_process(imagepath):
     from tf_keras.models import load_model
     from tensorflow.keras.applications.mobilenet_v2 import preprocess_input as mobilenet_preprocess
     import tensorflow as tf
+    import gc
+
     tf.config.threading.set_inter_op_parallelism_threads(1)
     tf.config.threading.set_intra_op_parallelism_threads(1)
 
@@ -79,93 +79,78 @@ def start_process(imagepath):
 
     classes = ["Benign", "InSitu", "Invasive", "Normal"]
 
-    def getCropImgs(img, needRotations=False):
+    def getCropImgs(img):
         z = np.asarray(img, dtype=np.float32)
         crops = []
         for i in range(3):
             for j in range(4):
                 crop = z[512*i:512*(i+1), 512*j:512*(j+1), :]
                 crops.append(crop)
-                if needRotations:
-                    crops.append(np.rot90(np.rot90(crop)))
         return crops
 
-    def softmaxToProbs(soft):
-        z_exp = np.exp(soft[0] - np.max(soft[0]))  # numerically stable softmax
+    def softmaxToProbs(row):
+        z_exp = np.exp(row - np.max(row))
         return (z_exp / np.sum(z_exp)) * 100
 
-    def predict_crop(crop_img_0_255):
-        """
-        crop_img_0_255: a 512x512x3 float32 image in 0–255 range
-        """
-        target_size = (model.input_shape[1], model.input_shape[2])
-        crop_resized_cnn = cv2.resize(crop_img_0_255, target_size)
-        
-        # --- CNN: normalise to 0-1 as trained ---
-        cnn_in = np.expand_dims(crop_resized_cnn / 255.0, axis=0)
-        cnn_out = model.predict(cnn_in, verbose=0)
-        cnn_probs = softmaxToProbs(cnn_out)
-        cnn_idx = int(np.argmax(cnn_probs))
+    # Load image
+    img_bgr = cv2.imread(img_path)
+    img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+    img_arr = img_rgb.astype(np.float32)
 
-        if tl_model is not None:
-            # --- TL: resize to 224 and apply MobileNetV2 preprocess_input ---
-            crop_resized = cv2.resize(crop_img_0_255, (224, 224))
-            tl_in = mobilenet_preprocess(crop_resized.copy())  # -1..+1  ← THE FIX
-            tl_in = np.expand_dims(tl_in, axis=0)
-            tl_out = tl_model.predict(tl_in, verbose=0)
-            # Handle both softmax and sigmoid output
-            if tl_out.shape[-1] == len(classes):
-                tl_probs = tl_out[0] * 100
-            else:
-                # Wrong number of outputs, fall back to cnn
-                tl_probs = np.zeros(len(classes))
-                tl_probs[cnn_idx] = cnn_probs[cnn_idx]
+    crops = getCropImgs(img_arr)
+    n = len(crops)
+
+    target_size = (model.input_shape[1], model.input_shape[2])
+
+    # --- SINGLE BATCHED CNN predict (avoids rebuilding TF graph 12x) ---
+    cnn_batch = np.stack([
+        cv2.resize(crop, target_size) / 255.0
+        for crop in crops
+    ], axis=0)  # shape: (12, H, W, 3)
+    cnn_all_out = model.predict(cnn_batch, verbose=0)  # shape: (12, 4)
+    cnn_probs_all = np.array([softmaxToProbs(row) for row in cnn_all_out])
+    sum_cnn = cnn_probs_all.sum(axis=0)
+
+    # --- SINGLE BATCHED TL predict ---
+    tl_batch = None
+    if tl_model is not None:
+        tl_batch = np.stack([
+            mobilenet_preprocess(cv2.resize(crop, (224, 224)).copy())
+            for crop in crops
+        ], axis=0)  # shape: (12, 224, 224, 3)
+        tl_all_out = tl_model.predict(tl_batch, verbose=0)
+        if tl_all_out.shape[-1] == len(classes):
+            sum_tl = tl_all_out.sum(axis=0) * 100
         else:
-            tl_probs = np.zeros(len(classes))
-            tl_probs[cnn_idx] = cnn_probs[cnn_idx]
+            cnn_idx_tmp = int(np.argmax(sum_cnn))
+            sum_tl = np.zeros(len(classes))
+            sum_tl[cnn_idx_tmp] = sum_cnn[cnn_idx_tmp]
+    else:
+        cnn_idx_tmp = int(np.argmax(sum_cnn))
+        sum_tl = np.zeros(len(classes))
+        sum_tl[cnn_idx_tmp] = sum_cnn[cnn_idx_tmp]
 
-        return cnn_idx, cnn_probs, tl_probs
+    cnn_idx        = int(np.argmax(sum_cnn))
+    tl_idx         = int(np.argmax(sum_tl))
+    prediction     = classes[cnn_idx]
+    prediction_tl  = classes[tl_idx]
+    cnn_confidence = float(sum_cnn[cnn_idx] / n)
+    tl_confidence  = float(sum_tl[tl_idx] / n)
 
-    def predictImage():
-        # Load using cv2 for explicit control as requested
-        img_bgr = cv2.imread(img_path)
-        img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
-        img_arr = img_rgb.astype(np.float32)
+    print(f"CNN: {prediction} @ {cnn_confidence:.2f}%")
+    print(f"TL:  {prediction_tl} @ {tl_confidence:.2f}%")
 
-        crops = getCropImgs(img_arr, needRotations=False)
+    heatmap_name = generate_heatmap_with_bbox(img_path, prefix="mammo")
 
-        sum_cnn = np.zeros(len(classes))
-        sum_tl  = np.zeros(len(classes))
+    # AI Clinical Suggestion
+    dominant = prediction_tl if tl_confidence > cnn_confidence else prediction
+    dynamic_suggestion = get_clinical_advice(dominant, 'mammography')
 
-        for i, crop in enumerate(crops):
-            _, cp, tp = predict_crop(crop)
-            sum_cnn += cp
-            sum_tl  += tp
+    # Clear TF session + free memory to prevent OOM on next request
+    tf.keras.backend.clear_session()
+    del model, cnn_batch
+    if tl_model and tl_batch is not None:
+        del tl_model, tl_batch
+    gc.collect()
 
-        n = len(crops)
-        cnn_idx       = int(np.argmax(sum_cnn))
-        tl_idx        = int(np.argmax(sum_tl))
-        prediction    = classes[cnn_idx]
-        prediction_tl = classes[tl_idx]
-        cnn_confidence = float(sum_cnn[cnn_idx] / n)
-        tl_confidence  = float(sum_tl[tl_idx] / n)
-
-        print(f"CNN: {prediction} @ {cnn_confidence:.2f}%")
-        print(f"TL:  {prediction_tl} @ {tl_confidence:.2f}%")
-
-        heatmap_name = generate_heatmap_with_bbox(img_path, prefix="mammo")
-
-        # --- AI Clinical Suggestion ---
-        dominant = prediction_tl if tl_confidence > cnn_confidence else prediction
-        dynamic_suggestion = get_clinical_advice(dominant, 'mammography')
-
-        # MAGIC FIX: Clear massive memory graph to stop OOM / SIGKILL!
-        import gc
-        tf.keras.backend.clear_session()
-        del model
-        if tl_model: del tl_model
-        gc.collect()
-
-        return prediction, prediction_tl, cnn_confidence, tl_confidence, heatmap_name, dynamic_suggestion
-
-    return predictImage()
+    return prediction, prediction_tl, cnn_confidence, tl_confidence, heatmap_name, dynamic_suggestion
