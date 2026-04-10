@@ -18,7 +18,6 @@ def start_process(imagepath):
     tf.config.threading.set_intra_op_parallelism_threads(1)
 
     img_path = os.path.join(settings.MEDIA_ROOT, imagepath)
-    img_path = os.path.join(settings.MEDIA_ROOT, imagepath)
     model_path = os.path.join(settings.BASE_DIR, 'models', 'brain_tumor_detector.h5')
     tl_model_path = os.path.join(settings.BASE_DIR, 'models', 'brain_tl_model.h5')
 

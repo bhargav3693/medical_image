@@ -69,7 +69,6 @@ def start_process(imagepath):
     tf.config.threading.set_intra_op_parallelism_threads(1)
 
     img_path = os.path.join(settings.MEDIA_ROOT, imagepath)
-    img_path = os.path.join(settings.MEDIA_ROOT, imagepath)
     model_path = os.path.join(settings.BASE_DIR, 'models', "mammography_model3.h5")
     tl_model_path = os.path.join(settings.BASE_DIR, 'models', 'mammography_tl_model.h5')
 

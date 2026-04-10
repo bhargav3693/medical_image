@@ -22,10 +22,10 @@ def get_base64_and_delete(file_name):
                 encoded = base64.b64encode(f.read()).decode('utf-8')
             # Instantly delete from server to save storage!
             os.remove(file_path) 
-            print(f"✅ SUCCESS: Deleted '{file_name}' from disk to save storage!")
+            print(f"[SUCCESS] Deleted '{file_name}' from disk to save storage!")
             return f"data:image/jpeg;base64,{encoded}"
     except Exception as e:
-        print(f"❌ ERROR processing/deleting file {file_name}: {e}")
+        print(f"[ERROR] processing/deleting file {file_name}: {e}")
         print(traceback.format_exc()) # Explicit error logging
     return None
 
@@ -114,7 +114,7 @@ def Chest(request):
                 'dynamic_suggestion': dynamic_suggestion,
             })
         except Exception as e:
-            print("❌ ERROR IN CHEST PREDICTION:")
+            print("[ERROR] IN CHEST PREDICTION:")
             print(traceback.format_exc())
             # Cleanup just in case it crashed midway
             get_base64_and_delete(filename)
@@ -154,7 +154,7 @@ def Mammography(request):
                 'dynamic_suggestion': dynamic_suggestion,
             })
         except Exception as e:
-            print("❌ ERROR IN MAMMOGRAPHY PREDICTION:")
+            print("[ERROR] IN MAMMOGRAPHY PREDICTION:")
             print(traceback.format_exc())
             get_base64_and_delete(filename)
 
@@ -208,7 +208,7 @@ def MriStroke(request):
                 'dynamic_suggestion': dynamic_suggestion,
             })
         except Exception as e:
-            print("❌ ERROR IN MRI PREDICTION:")
+            print("[ERROR] IN MRI PREDICTION:")
             print(traceback.format_exc())
             get_base64_and_delete(filename)
 

@@ -112,6 +112,8 @@ def start_process(imagepath):
     tf.config.threading.set_intra_op_parallelism_threads(1)
 
     img_path = os.path.join(settings.MEDIA_ROOT, imagepath)
+    model_path = os.path.join(settings.BASE_DIR, 'models', 'ChestModel.h5')
+    tl_model_path = os.path.join(settings.BASE_DIR, 'models', 'chest_tl_model.h5')
 
     # -- MEMORY OPTIMIZATION for Render Free Tier (512MB limit) --
     # Loading two heavy models simultaneously causes an Out of Memory (SIGKILL 9).
