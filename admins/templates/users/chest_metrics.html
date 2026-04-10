@@ -71,32 +71,32 @@
 
     <!-- Row 1 -->
     <div class="row g-4 mb-4">
-      <div class="col-lg-6">
+      <div class="col-12 col-md-6">
         <div class="chart-box">
           <div class="chart-label"><i class="bi bi-bar-chart-fill" style="color:#3b82f6;"></i> Accuracy Comparison</div>
-          <canvas id="accChart" height="270"></canvas>
+          <div style="position:relative; width:100%;"><canvas id="accChart"></canvas></div>
         </div>
       </div>
-      <div class="col-lg-6">
+      <div class="col-12 col-md-6">
         <div class="chart-box">
           <div class="chart-label"><i class="bi bi-activity" style="color:#ef4444;"></i> Loss vs Epoch</div>
-          <canvas id="lossChart" height="270"></canvas>
+          <div style="position:relative; width:100%;"><canvas id="lossChart"></canvas></div>
         </div>
       </div>
     </div>
 
     <!-- Row 2 -->
     <div class="row g-4">
-      <div class="col-lg-6">
+      <div class="col-12 col-md-6">
         <div class="chart-box">
           <div class="chart-label"><i class="bi bi-grid-3x3" style="color:#22c55e;"></i> Confusion Matrix (TL Model)</div>
-          <canvas id="confMatrix" height="270"></canvas>
+          <div style="position:relative; width:100%;"><canvas id="confMatrix"></canvas></div>
         </div>
       </div>
-      <div class="col-lg-6">
+      <div class="col-12 col-md-6">
         <div class="chart-box">
           <div class="chart-label"><i class="bi bi-graph-up-arrow" style="color:#38bdf8;"></i> ROC Curve — AUC Scores</div>
-          <canvas id="rocChart" height="270"></canvas>
+          <div style="position:relative; width:100%;"><canvas id="rocChart"></canvas></div>
         </div>
       </div>
     </div>
@@ -125,9 +125,10 @@ new Chart(document.getElementById('accChart'), {
     ]
   },
   options: {
-    responsive: true, animation: { duration: 1800, easing: 'easeOutQuart' },
-    plugins: { legend: { position: 'bottom', labels: { padding: 18, usePointStyle: true, pointStyleWidth: 10 } } },
-    scales: { y: { beginAtZero: false, min: 80, max: 100, grid: { color: gridColor } }, x: { grid: { display: false } } }
+    responsive: true, maintainAspectRatio: true, aspectRatio: 1.6,
+    animation: { duration: 1800, easing: 'easeOutQuart' },
+    plugins: { legend: { position: 'bottom', labels: { padding: 14, usePointStyle: true, pointStyleWidth: 10, boxWidth: 10, font: { size: 11 } } } },
+    scales: { y: { beginAtZero: false, min: 80, max: 100, grid: { color: gridColor }, ticks: { font: { size: 11 } } }, x: { grid: { display: false }, ticks: { font: { size: 11 } } } }
   }
 });
 
@@ -145,9 +146,10 @@ new Chart(document.getElementById('lossChart'), {
     ]
   },
   options: {
-    responsive: true, animation: { duration: 2200 },
-    plugins: { legend: { position: 'bottom', labels: { padding: 14, usePointStyle: true } } },
-    scales: { y: { beginAtZero: true, grid: { color: gridColor } }, x: { grid: { display: false } } }
+    responsive: true, maintainAspectRatio: true, aspectRatio: 1.6,
+    animation: { duration: 2200 },
+    plugins: { legend: { position: 'bottom', labels: { padding: 10, usePointStyle: true, font: { size: 10 } } } },
+    scales: { y: { beginAtZero: true, grid: { color: gridColor }, ticks: { font: { size: 11 } } }, x: { grid: { display: false }, ticks: { font: { size: 11 } } } }
   }
 });
 
@@ -162,9 +164,10 @@ new Chart(document.getElementById('confMatrix'), {
     ]
   },
   options: {
-    indexAxis: 'y', responsive: true, animation: { duration: 1800 },
-    plugins: { legend: { position: 'bottom', labels: { padding: 14, usePointStyle: true } } },
-    scales: { x: { grid: { color: gridColor } }, y: { grid: { display: false }, ticks: { font: { size: 11 } } } }
+    indexAxis: 'y', responsive: true, maintainAspectRatio: true, aspectRatio: 1.4,
+    animation: { duration: 1800 },
+    plugins: { legend: { position: 'bottom', labels: { padding: 10, usePointStyle: true, font: { size: 10 } } } },
+    scales: { x: { grid: { color: gridColor }, ticks: { font: { size: 10 } } }, y: { grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 0 } } }
   }
 });
 
@@ -179,11 +182,12 @@ new Chart(document.getElementById('rocChart'), {
     ]
   },
   options: {
-    responsive: true, animation: { duration: 2000 },
-    plugins: { legend: { position: 'bottom', labels: { padding: 14, usePointStyle: true } } },
+    responsive: true, maintainAspectRatio: true, aspectRatio: 1.6,
+    animation: { duration: 2000 },
+    plugins: { legend: { position: 'bottom', labels: { padding: 10, usePointStyle: true, font: { size: 10 } } } },
     scales: {
-      x: { type:'linear', min:0, max:1, title:{display:true,text:'False Positive Rate',color:'#64748b',font:{size:11}}, grid:{color:gridColor} },
-      y: { min:0, max:1, title:{display:true,text:'True Positive Rate',color:'#64748b',font:{size:11}}, grid:{color:gridColor} }
+      x: { type:'linear', min:0, max:1, title:{display:true,text:'False Positive Rate',color:'#64748b',font:{size:10}}, grid:{color:gridColor}, ticks:{font:{size:10}} },
+      y: { min:0, max:1, title:{display:true,text:'True Positive Rate',color:'#64748b',font:{size:10}}, grid:{color:gridColor}, ticks:{font:{size:10}} }
     }
   }
 });

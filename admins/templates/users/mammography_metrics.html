@@ -65,23 +65,23 @@
   <div id="graphs-section">
     <div class="chart-label mb-3" style="font-size:13px;"><i class="bi bi-bar-chart-line-fill" style="color:#ef4444;font-size:15px;"></i> Graphical Analysis</div>
     <div class="row g-4 mb-4">
-      <div class="col-lg-6"><div class="chart-box">
+      <div class="col-12 col-md-6"><div class="chart-box">
         <div class="chart-label"><i class="bi bi-bar-chart-fill" style="color:#3b82f6;"></i> Accuracy Comparison</div>
-        <canvas id="accChart" height="270"></canvas>
+        <div style="position:relative;width:100%;"><canvas id="accChart"></canvas></div>
       </div></div>
-      <div class="col-lg-6"><div class="chart-box">
+      <div class="col-12 col-md-6"><div class="chart-box">
         <div class="chart-label"><i class="bi bi-activity" style="color:#ef4444;"></i> Loss vs Epoch</div>
-        <canvas id="lossChart" height="270"></canvas>
+        <div style="position:relative;width:100%;"><canvas id="lossChart"></canvas></div>
       </div></div>
     </div>
     <div class="row g-4">
-      <div class="col-lg-6"><div class="chart-box">
+      <div class="col-12 col-md-6"><div class="chart-box">
         <div class="chart-label"><i class="bi bi-grid-3x3" style="color:#22c55e;"></i> Confusion Matrix (TL Model)</div>
-        <canvas id="confMatrix" height="270"></canvas>
+        <div style="position:relative;width:100%;"><canvas id="confMatrix"></canvas></div>
       </div></div>
-      <div class="col-lg-6"><div class="chart-box">
+      <div class="col-12 col-md-6"><div class="chart-box">
         <div class="chart-label"><i class="bi bi-graph-up-arrow" style="color:#38bdf8;"></i> ROC Curve — AUC Scores</div>
-        <canvas id="rocChart" height="270"></canvas>
+        <div style="position:relative;width:100%;"><canvas id="rocChart"></canvas></div>
       </div></div>
     </div>
   </div>
@@ -92,13 +92,13 @@
 Chart.defaults.color='#94a3b8'; Chart.defaults.borderColor='rgba(255,255,255,0.06)';
 const g='rgba(255,255,255,0.06)', C='#3b82f6', CF='rgba(59,130,246,0.18)', T='#22c55e', TF='rgba(34,197,94,0.15)', E='#ef4444';
 
-new Chart(document.getElementById('accChart'),{type:'bar',data:{labels:['Accuracy','Precision','Recall','F1-Score'],datasets:[{label:'CNN',data:[78.5,79.8,77.2,78.49],backgroundColor:CF,borderColor:C,borderWidth:2,borderRadius:8,borderSkipped:false},{label:'TL',data:[88.3,89.2,87.6,88.39],backgroundColor:TF,borderColor:T,borderWidth:2,borderRadius:8,borderSkipped:false}]},options:{responsive:true,animation:{duration:1800,easing:'easeOutQuart'},plugins:{legend:{position:'bottom',labels:{padding:18,usePointStyle:true}}},scales:{y:{min:70,max:100,grid:{color:g}},x:{grid:{display:false}}}}});
+new Chart(document.getElementById('accChart'),{type:'bar',data:{labels:['Accuracy','Precision','Recall','F1-Score'],datasets:[{label:'CNN',data:[78.5,79.8,77.2,78.49],backgroundColor:CF,borderColor:C,borderWidth:2,borderRadius:8,borderSkipped:false},{label:'TL',data:[88.3,89.2,87.6,88.39],backgroundColor:TF,borderColor:T,borderWidth:2,borderRadius:8,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:true,aspectRatio:1.6,animation:{duration:1800,easing:'easeOutQuart'},plugins:{legend:{position:'bottom',labels:{padding:12,usePointStyle:true,font:{size:10}}}},scales:{y:{min:70,max:100,grid:{color:g},ticks:{font:{size:10}}},x:{grid:{display:false},ticks:{font:{size:10}}}}}});
 
-new Chart(document.getElementById('lossChart'),{type:'line',data:{labels:['E1','E2','E3','E4','E5','E6','E7','E8','E9','E10'],datasets:[{label:'CNN Train',data:[1.9,1.55,1.25,1.00,0.80,0.66,0.55,0.47,0.41,0.37],borderColor:C,backgroundColor:CF,fill:true,tension:0.45,pointRadius:4},{label:'CNN Val',data:[2.1,1.75,1.45,1.20,0.98,0.83,0.72,0.65,0.61,0.58],borderColor:C,backgroundColor:'transparent',borderDash:[6,4],fill:false,tension:0.45,pointRadius:3},{label:'TL Train',data:[1.4,1.0,0.72,0.52,0.40,0.32,0.26,0.22,0.19,0.17],borderColor:T,backgroundColor:TF,fill:true,tension:0.45,pointRadius:4},{label:'TL Val',data:[1.6,1.18,0.88,0.66,0.52,0.43,0.37,0.33,0.30,0.28],borderColor:T,backgroundColor:'transparent',borderDash:[6,4],fill:false,tension:0.45,pointRadius:3}]},options:{responsive:true,animation:{duration:2200},plugins:{legend:{position:'bottom',labels:{padding:14,usePointStyle:true}}},scales:{y:{beginAtZero:true,grid:{color:g}},x:{grid:{display:false}}}}});
+new Chart(document.getElementById('lossChart'),{type:'line',data:{labels:['E1','E2','E3','E4','E5','E6','E7','E8','E9','E10'],datasets:[{label:'CNN Train',data:[1.9,1.55,1.25,1.00,0.80,0.66,0.55,0.47,0.41,0.37],borderColor:C,backgroundColor:CF,fill:true,tension:0.45,pointRadius:3},{label:'CNN Val',data:[2.1,1.75,1.45,1.20,0.98,0.83,0.72,0.65,0.61,0.58],borderColor:C,backgroundColor:'transparent',borderDash:[6,4],fill:false,tension:0.45,pointRadius:2},{label:'TL Train',data:[1.4,1.0,0.72,0.52,0.40,0.32,0.26,0.22,0.19,0.17],borderColor:T,backgroundColor:TF,fill:true,tension:0.45,pointRadius:3},{label:'TL Val',data:[1.6,1.18,0.88,0.66,0.52,0.43,0.37,0.33,0.30,0.28],borderColor:T,backgroundColor:'transparent',borderDash:[6,4],fill:false,tension:0.45,pointRadius:2}]},options:{responsive:true,maintainAspectRatio:true,aspectRatio:1.6,animation:{duration:2200},plugins:{legend:{position:'bottom',labels:{padding:10,usePointStyle:true,font:{size:10}}}},scales:{y:{beginAtZero:true,grid:{color:g},ticks:{font:{size:10}}},x:{grid:{display:false},ticks:{font:{size:10}}}}}});
 
-new Chart(document.getElementById('confMatrix'),{type:'bar',data:{labels:['TP: Benign','FP: Benign→Mal','FN: Mal→Benign','TP: Malignant'],datasets:[{label:'CNN',data:[310,47,62,281],backgroundColor:[CF,E+'88',E+'66',CF],borderColor:[C,E,E,C],borderWidth:2,borderRadius:5},{label:'TL',data:[342,15,28,315],backgroundColor:[TF,'rgba(251,191,36,0.35)','rgba(251,191,36,0.25)',TF],borderColor:[T,'#fbbf24','#fbbf24',T],borderWidth:2,borderRadius:5}]},options:{indexAxis:'y',responsive:true,animation:{duration:1800},plugins:{legend:{position:'bottom',labels:{padding:14,usePointStyle:true}}},scales:{x:{grid:{color:g}},y:{grid:{display:false},ticks:{font:{size:11}}}}}});
+new Chart(document.getElementById('confMatrix'),{type:'bar',data:{labels:['TP: Benign','FP: Benign→Mal','FN: Mal→Benign','TP: Malignant'],datasets:[{label:'CNN',data:[310,47,62,281],backgroundColor:[CF,E+'88',E+'66',CF],borderColor:[C,E,E,C],borderWidth:2,borderRadius:5},{label:'TL',data:[342,15,28,315],backgroundColor:[TF,'rgba(251,191,36,0.35)','rgba(251,191,36,0.25)',TF],borderColor:[T,'#fbbf24','#fbbf24',T],borderWidth:2,borderRadius:5}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:true,aspectRatio:1.4,animation:{duration:1800},plugins:{legend:{position:'bottom',labels:{padding:10,usePointStyle:true,font:{size:10}}}},scales:{x:{grid:{color:g},ticks:{font:{size:10}}},y:{grid:{display:false},ticks:{font:{size:10},maxRotation:0}}}}});
 
-new Chart(document.getElementById('rocChart'),{type:'line',data:{datasets:[{label:'CNN  AUC=0.88',data:[{x:0,y:0},{x:0.08,y:0.50},{x:0.18,y:0.70},{x:0.30,y:0.80},{x:0.45,y:0.87},{x:0.65,y:0.92},{x:0.85,y:0.96},{x:1,y:1}],borderColor:C,backgroundColor:CF,fill:true,tension:0.35,pointRadius:0,borderWidth:2.5},{label:'TL   AUC=0.95',data:[{x:0,y:0},{x:0.04,y:0.60},{x:0.12,y:0.78},{x:0.22,y:0.87},{x:0.38,y:0.93},{x:0.55,y:0.96},{x:0.78,y:0.98},{x:1,y:1}],borderColor:T,backgroundColor:TF,fill:true,tension:0.35,pointRadius:0,borderWidth:2.5},{label:'Random AUC=0.50',data:[{x:0,y:0},{x:1,y:1}],borderColor:'rgba(255,255,255,0.2)',borderDash:[5,5],fill:false,pointRadius:0}]},options:{responsive:true,animation:{duration:2000},plugins:{legend:{position:'bottom',labels:{padding:14,usePointStyle:true}}},scales:{x:{type:'linear',min:0,max:1,title:{display:true,text:'False Positive Rate',color:'#64748b',font:{size:11}},grid:{color:g}},y:{min:0,max:1,title:{display:true,text:'True Positive Rate',color:'#64748b',font:{size:11}},grid:{color:g}}}}});
+new Chart(document.getElementById('rocChart'),{type:'line',data:{datasets:[{label:'CNN  AUC=0.88',data:[{x:0,y:0},{x:0.08,y:0.50},{x:0.18,y:0.70},{x:0.30,y:0.80},{x:0.45,y:0.87},{x:0.65,y:0.92},{x:0.85,y:0.96},{x:1,y:1}],borderColor:C,backgroundColor:CF,fill:true,tension:0.35,pointRadius:0,borderWidth:2.5},{label:'TL   AUC=0.95',data:[{x:0,y:0},{x:0.04,y:0.60},{x:0.12,y:0.78},{x:0.22,y:0.87},{x:0.38,y:0.93},{x:0.55,y:0.96},{x:0.78,y:0.98},{x:1,y:1}],borderColor:T,backgroundColor:TF,fill:true,tension:0.35,pointRadius:0,borderWidth:2.5},{label:'Random AUC=0.50',data:[{x:0,y:0},{x:1,y:1}],borderColor:'rgba(255,255,255,0.2)',borderDash:[5,5],fill:false,pointRadius:0}]},options:{responsive:true,maintainAspectRatio:true,aspectRatio:1.6,animation:{duration:2000},plugins:{legend:{position:'bottom',labels:{padding:10,usePointStyle:true,font:{size:10}}}},scales:{x:{type:'linear',min:0,max:1,title:{display:true,text:'False Positive Rate',color:'#64748b',font:{size:10}},grid:{color:g},ticks:{font:{size:10}}},y:{min:0,max:1,title:{display:true,text:'True Positive Rate',color:'#64748b',font:{size:10}},grid:{color:g},ticks:{font:{size:10}}}}}}); 
 
 if(window.location.hash){setTimeout(()=>{const el=document.querySelector(window.location.hash);if(el)el.scrollIntoView({behavior:'smooth'});},500);}
 </script>
