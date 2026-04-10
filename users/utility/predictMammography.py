@@ -1,4 +1,5 @@
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 os.environ['TF_USE_LEGACY_KERAS'] = '1'
 
 from users.utility.generative_ai import get_clinical_advice
@@ -58,11 +59,12 @@ def generate_heatmap_with_bbox(image_path, prefix="mammo"):
 
 
 def start_process(imagepath):
-    from tf_keras.models import load_model
-    from tensorflow.keras.applications.mobilenet_v2 import preprocess_input as mobilenet_preprocess
     import tensorflow as tf
+    from tensorflow.keras.models import load_model
+    from tensorflow.keras.applications.mobilenet_v2 import preprocess_input as mobilenet_preprocess
     import gc
 
+    # Limit CPU threads to prevent OOM on Render free (512MB)
     tf.config.threading.set_inter_op_parallelism_threads(1)
     tf.config.threading.set_intra_op_parallelism_threads(1)
 

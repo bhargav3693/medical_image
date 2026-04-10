@@ -1,4 +1,5 @@
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 os.environ['TF_USE_LEGACY_KERAS'] = '1'
 
 import cv2
@@ -8,9 +9,11 @@ from django.conf import settings
 
 
 def start_process(imagepath):
-    from tf_keras.models import load_model
-    from tensorflow.keras.applications.mobilenet_v2 import preprocess_input as mobilenet_preprocess
     import tensorflow as tf
+    from tensorflow.keras.models import load_model
+    from tensorflow.keras.applications.mobilenet_v2 import preprocess_input as mobilenet_preprocess
+
+    # Limit CPU threads to prevent OOM on Render free (512MB)
     tf.config.threading.set_inter_op_parallelism_threads(1)
     tf.config.threading.set_intra_op_parallelism_threads(1)
 

@@ -1,4 +1,5 @@
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Suppress TF logs
 os.environ['TF_USE_LEGACY_KERAS'] = '1'
 
 from users.utility.generative_ai import get_clinical_advice
@@ -17,14 +18,14 @@ labels = [
 
 
 def get_mean_std_per_batchR(image_path, df=None, H=320, W=320):
-    from tf_keras.utils import load_img
-    # MAGIC FIX: Directly read the single image instead of 100 to stop server timeouts!
+    import tensorflow as tf
+    from tensorflow.keras.utils import load_img
     single_img = np.array(load_img(image_path, target_size=(H, W)))
     return np.mean(single_img), np.std(single_img)
 
 
 def load_imageR(img_path, df=None, preprocess=True, H=320, W=320):
-    from tf_keras.utils import load_img
+    from tensorflow.keras.utils import load_img
     mean, std = get_mean_std_per_batchR(img_path, df, H=H, W=W)
     x = load_img(img_path, target_size=(H, W))
     x = np.array(x).astype("float32")
@@ -102,10 +103,12 @@ def generate_heatmap_with_bbox(image_path):
 
 
 def start_process(imagepath):
-    from tf_keras.utils import load_img
-    from tf_keras.models import load_model
-    from tensorflow.keras.applications.mobilenet_v2 import preprocess_input as mobilenet_preprocess
     import tensorflow as tf
+    from tensorflow.keras.utils import load_img
+    from tensorflow.keras.models import load_model
+    from tensorflow.keras.applications.mobilenet_v2 import preprocess_input as mobilenet_preprocess
+
+    # Limit CPU threads to prevent OOM on Render free (512MB)
     tf.config.threading.set_inter_op_parallelism_threads(1)
     tf.config.threading.set_intra_op_parallelism_threads(1)
 
@@ -114,7 +117,7 @@ def start_process(imagepath):
     model_path = os.path.join(settings.BASE_DIR, 'models', 'ChestModel.h5')
     tl_model_path = os.path.join(settings.BASE_DIR, 'models', 'chest_tl_model.h5')
 
-    model = load_model(model_path, compile=False, safe_mode=False)
+    model = load_model(model_path, compile=False)
     try:
         tl_model = load_model(tl_model_path, compile=False)
     except Exception as e:
