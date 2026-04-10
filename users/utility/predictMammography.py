@@ -60,7 +60,7 @@ def generate_heatmap_with_bbox(image_path, prefix="mammo"):
 
 def start_process(imagepath):
     import tensorflow as tf
-    from tensorflow.keras.models import load_model
+    from tf_keras.models import load_model
     from tensorflow.keras.applications.mobilenet_v2 import preprocess_input as mobilenet_preprocess
     import gc
 

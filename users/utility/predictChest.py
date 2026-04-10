@@ -18,14 +18,13 @@ labels = [
 
 
 def get_mean_std_per_batchR(image_path, df=None, H=320, W=320):
-    import tensorflow as tf
-    from tensorflow.keras.utils import load_img
+    from tf_keras.utils import load_img
     single_img = np.array(load_img(image_path, target_size=(H, W)))
     return np.mean(single_img), np.std(single_img)
 
 
 def load_imageR(img_path, df=None, preprocess=True, H=320, W=320):
-    from tensorflow.keras.utils import load_img
+    from tf_keras.utils import load_img
     mean, std = get_mean_std_per_batchR(img_path, df, H=H, W=W)
     x = load_img(img_path, target_size=(H, W))
     x = np.array(x).astype("float32")
@@ -104,8 +103,8 @@ def generate_heatmap_with_bbox(image_path):
 
 def start_process(imagepath):
     import tensorflow as tf
-    from tensorflow.keras.utils import load_img
-    from tensorflow.keras.models import load_model
+    from tf_keras.utils import load_img
+    from tf_keras.models import load_model
     from tensorflow.keras.applications.mobilenet_v2 import preprocess_input as mobilenet_preprocess
 
     # Limit CPU threads to prevent OOM on Render free (512MB)
@@ -117,7 +116,7 @@ def start_process(imagepath):
     model_path = os.path.join(settings.BASE_DIR, 'models', 'ChestModel.h5')
     tl_model_path = os.path.join(settings.BASE_DIR, 'models', 'chest_tl_model.h5')
 
-    model = load_model(model_path, compile=False)
+    model = load_model(model_path, compile=False, safe_mode=False)
     try:
         tl_model = load_model(tl_model_path, compile=False)
     except Exception as e:

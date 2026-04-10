@@ -10,7 +10,7 @@ from django.conf import settings
 
 def start_process(imagepath):
     import tensorflow as tf
-    from tensorflow.keras.models import load_model
+    from tf_keras.models import load_model
     from tensorflow.keras.applications.mobilenet_v2 import preprocess_input as mobilenet_preprocess
 
     # Limit CPU threads to prevent OOM on Render free (512MB)
