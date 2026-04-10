@@ -22,7 +22,7 @@ imutils==0.5.4
 google-genai==0.3.0
 
 # ── Download models (gdown) ──
-gdown==4.7.1
+gdown>=5.2.1
 
 # ── Utilities ──
 requests==2.28.2
