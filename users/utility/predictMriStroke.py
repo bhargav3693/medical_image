@@ -18,16 +18,14 @@ def start_process(imagepath):
     tf.config.threading.set_intra_op_parallelism_threads(1)
 
     img_path = os.path.join(settings.MEDIA_ROOT, imagepath)
+    img_path = os.path.join(settings.MEDIA_ROOT, imagepath)
     model_path = os.path.join(settings.BASE_DIR, 'models', 'brain_tumor_detector.h5')
     tl_model_path = os.path.join(settings.BASE_DIR, 'models', 'brain_tl_model.h5')
 
+    # -- MEMORY OPTIMIZATION for Render Free Tier (512MB limit) --
     model = load_model(model_path, compile=False)
-    try:
-        tl_model = load_model(tl_model_path, compile=False)
-    except Exception as e:
-        print(f"[WARN] Could not load Brain TL model: {e}")
-        tl_model = None
-
+    tl_model = None  # Disabled to fit in 512MB RAM
+    
     image_orig = cv2.imread(img_path)
     print('*' * 50)
     print("CNN Model:", model)

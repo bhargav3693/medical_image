@@ -69,16 +69,14 @@ def start_process(imagepath):
     tf.config.threading.set_intra_op_parallelism_threads(1)
 
     img_path = os.path.join(settings.MEDIA_ROOT, imagepath)
+    img_path = os.path.join(settings.MEDIA_ROOT, imagepath)
     model_path = os.path.join(settings.BASE_DIR, 'models', "mammography_model3.h5")
     tl_model_path = os.path.join(settings.BASE_DIR, 'models', 'mammography_tl_model.h5')
 
+    # -- MEMORY OPTIMIZATION for Render Free Tier (512MB limit) --
     model = load_model(model_path, compile=False)
-    try:
-        tl_model = load_model(tl_model_path, compile=False)
-    except Exception as e:
-        print(f"[WARN] Could not load TL model: {e}")
-        tl_model = None
-
+    tl_model = None  # Disabled to fit in 512MB RAM
+    
     classes = ["Benign", "InSitu", "Invasive", "Normal"]
 
     def getCropImgs(img):

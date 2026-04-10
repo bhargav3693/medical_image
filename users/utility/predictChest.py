@@ -113,15 +113,11 @@ def start_process(imagepath):
 
     img_path = os.path.join(settings.MEDIA_ROOT, imagepath)
 
-    model_path = os.path.join(settings.BASE_DIR, 'models', 'ChestModel.h5')
-    tl_model_path = os.path.join(settings.BASE_DIR, 'models', 'chest_tl_model.h5')
-
+    # -- MEMORY OPTIMIZATION for Render Free Tier (512MB limit) --
+    # Loading two heavy models simultaneously causes an Out of Memory (SIGKILL 9).
+    # We will ONLY load the primary CNN model and bypass the TL model.
     model = load_model(model_path, compile=False, safe_mode=False)
-    try:
-        tl_model = load_model(tl_model_path, compile=False)
-    except Exception as e:
-        print(f"[WARN] Could not load TL model: {e}")
-        tl_model = None
+    tl_model = None  # Disabled to fit in 512MB RAM
 
     # --- CNN Inference ---
     preprocessed_input = load_imageR(img_path, None)
