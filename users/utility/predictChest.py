@@ -5,7 +5,6 @@ os.environ['TF_USE_LEGACY_KERAS'] = '1'
 from users.utility.generative_ai import get_clinical_advice
 
 import numpy as np
-import pandas as pd
 import cv2
 
 from django.conf import settings
