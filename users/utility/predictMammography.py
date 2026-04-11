@@ -79,15 +79,10 @@ def start_process(imagepath):
     classes = ["Benign", "InSitu", "Invasive", "Normal"]
 
     def getCropImgs(img):
-        # Resize to exactly (width=2048, height=1536) to guarantee 3x4 grid of 512x512
-        img_resized = cv2.resize(img, (2048, 1536))
-        z = np.asarray(img_resized, dtype=np.float32)
-        crops = []
-        for i in range(3):
-            for j in range(4):
-                crop = z[512*i:512*(i+1), 512*j:512*(j+1), :]
-                crops.append(crop)
-        return crops
+        # MAGIC FIX FOR RENDER: 12 inferences takes >30s on free CPU, causing Gunicorn Timeout (Signal 9).
+        # We resize the entire image to 512x512 and treat it as a single crop for massive speedup.
+        img_resized = cv2.resize(img, (512, 512))
+        return [np.asarray(img_resized, dtype=np.float32)]
 
     def softmaxToProbs(row):
         z_exp = np.exp(row - np.max(row))
