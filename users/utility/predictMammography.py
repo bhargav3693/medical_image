@@ -17,7 +17,12 @@ def generate_heatmap_with_bbox(image_path, prefix="mammo"):
     if img_bgr is None:
         return None
 
+    # Aggressive resize to prevent memory spikes if user uploads huge 4k images!
     h, w = img_bgr.shape[:2]
+    if max(h, w) > 800:
+        scale = 800 / max(h, w)
+        img_bgr = cv2.resize(img_bgr, (int(w * scale), int(h * scale)))
+
     gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
     blurred = cv2.GaussianBlur(gray, (31, 31), 0)
 
@@ -90,6 +95,13 @@ def start_process(imagepath):
 
     # Load image
     img_bgr = cv2.imread(img_path)
+
+    # Aggressive resize to prevent memory spikes if user uploads huge 4k images!
+    h, w = img_bgr.shape[:2]
+    if max(h, w) > 800:
+        scale = 800 / max(h, w)
+        img_bgr = cv2.resize(img_bgr, (int(w * scale), int(h * scale)))
+
     img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
     img_arr = img_rgb.astype(np.float32)
 
